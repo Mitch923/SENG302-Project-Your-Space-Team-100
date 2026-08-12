@@ -1,0 +1,38 @@
+<!--
+HEAD METADATA DEFAULTS
+Written in conjunction with ChatGPT
+
+Use this fragment by using the
+<th:block th:insert="~{fragments/head :: head()}
+syntax inside the <head> tag of your page
+-->
+<head th:fragment="head(title, description, keywords)">
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+  <!-- Dynamic Page Title -->
+  <title th:text="${title}">Your Space</title>
+
+  <!-- Default Metadata -->
+  <meta name="description" th:attr="content=${description ?: 'Welcome to Your Space!'}">
+  <meta name="keywords" th:attr="content=${keywords ?: 'Your Space, Home Renovations App'}">
+  <meta content="Team-H" name="author">
+  <base th:href="@{/}"/>
+
+  <!-- Favicon links courtesy of favicon.io/favicon-converter/ -->
+  <link rel="apple-touch-icon" sizes="180x180" th:href="@{/img/favicon/apple-touch-icon.png}">
+  <link rel="icon" sizes="32x32" th:href="@{/img/favicon/favicon-32x32.png}" type="image/png">
+  <link rel="icon" sizes="16x16" th:href="@{/img/favicon/favicon-16x16.png}" type="image/png">
+  <link rel="manifest" th:href="@{/img/favicon/site.webmanifest}">
+
+  <!-- Default Stylesheets -->
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/css/header.css}">  <!-- css for public/internal headers -->
+  <link rel="stylesheet" th:href="@{/css/profile/profile.css}">
+  <link rel="stylesheet" th:href="@{/css/main.css}">
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <!-- Default Scripts -->
+  <script defer th:src="@{/js/utils.js}"></script>
+  <script defer th:src="@{/webjars/bootstrap/js/bootstrap.bundle.min.js}"></script>
+  <!-- <script src="/js/main.js"></script> -->
+</head>

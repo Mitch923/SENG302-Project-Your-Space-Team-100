@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta context="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <script defer th:src="@{/js/viewRenovationRecord.js}" type="module"></script>
+  <script defer th:src="@{/js/getDesignsPartialView.js}" type="module"></script>
+  <link rel="stylesheet" th:href="@{/css/recordDisplayPage.css}"/>
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+  <th:block th:insert="~{fragments/head :: head(
+      'Renovation Record | Your Space',
+      'My Renovation Record',
+      'renovation')}"></th:block>
+</head>
+<body style="background-color: #f6f6f6;">
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+<div id="addDesignStatus" th:data-success="${success}"></div>
+<div id="roomData" th:data-roomnames="${roomNames}"></div>
+<div class="container mt-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb text-truncate">
+      <li class="breadcrumb-item" th:if="${owned}"><a th:href="@{/myRenovations}">MyRenovations</a>
+      </li>
+      <li class="breadcrumb-item" th:if="${not owned}"><a
+          th:href="@{/publicRenovations}">Browse</a>
+      </li>
+      <li class="breadcrumb-item"><a th:href="@{/viewRenovation/{id}(id=${renovationRecord.id})}"
+                                     th:text="${renovationRecord.name}"></a>
+      </li>
+      <li aria-current="page" class="breadcrumb-item active">Designs</li>
+    </ol>
+  </nav>
+  <div class="row">
+    <div class="col-md-auto p-3 rounded-2 me-3 shadow-sm align-self-start"
+         style="background-color: #FFFFFF">
+      <h1>Designs</h1>
+      <p th:if="${owned}">Manage your Designs here</p>
+      <div class="col-md-auto ms-auto">
+        <ul class="list-group list-group-flush mw-100">
+          <li class="list-group-item">
+            <form method="post"
+                  th:action="@{renovationRecord/{id}/createDesign(id=${renovationRecord.id})}"
+                  th:if="${owned}">
+              <button class="w-100 btn-primary btn text-white mb-3" type="submit">
+                Create Design
+              </button>
+            </form>
+          </li>
+          <li class="list-group-item d-flex justify-content-between ps-0 gap-4 align-items-center"
+              th:each="room : ${rooms}">
+            <div
+                th:replace="~{fragments/showMore :: showMoreText(${room.name}, 'roomName', '', 2)}"></div>
+            <span class="badge bg-primary rounded-pill"
+                  th:text="${#lists.size(room.designsForRoom)}"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col p-3 rounded-2 shadow-sm  overflow-y-auto h-100"
+         style="max-height: 80vh; background-color: #FFFFFF">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex" th:each="renovationDesign, iter : ${designs}">
+          <div class="col-4 col-md-3 me-2 design-card-body">
+            <div class="d-flex align-items-center flex-wrap mb-2">
+              <div class="dropdown">
+                <a aria-expanded="false"
+                   aria-haspopup="true"
+                   class="btn btn-secondary dropdown-anim-icon p-0 m-1"
+                   data-bs-toggle="dropdown"
+                   role="button"
+                   style="background-color: transparent; border: none !important; color: #333333;"
+                   th:attr="id='dropdownMenuButton-' + ${iter.count}"
+                   type="button">
+                  <div class="selected-item icon"
+                       th:attr="id='selectedIcon-' + ${iter.count}">
+                    <div
+                        th:replace="~{fragments/designIcons :: icon(${#strings.defaultString(renovationDesign.getIconName(), 'plus')})}"></div>
+                  </div>
+                </a>
+                <div class="dropdown-menu">
+                  <div class="d-flex flex-nowrap justify-content-center gap-2 h-100">
+                    <a class="dropdown-item renovationDesign-icon d-flex flex-column align-items-center justify-content-center remove-icon-button"
+                       href="#" id="plus">
+                      <span class="text-danger">Remove Icon</span>
+                    </a>
+                    <a class="dropdown-item renovationDesign-icon" href="#" id="buildingCheck">
+                      <div th:replace="~{fragments/designIcons :: icon(buildingCheck)}"></div>
+                    </a>
+                    <a class="dropdown-item renovationDesign-icon" href="#" id="buildingGear">
+                      <div th:replace="~{fragments/designIcons :: icon(buildingGear)}"></div>
+                    </a>
+                    <a class="dropdown-item renovationDesign-icon" href="#"
+                       id="buildingExclamation">
+                      <div th:replace="~{fragments/designIcons :: icon(buildingExclamation)}"></div>
+                    </a>
+                    <a class="dropdown-item renovationDesign-icon" href="#" id="buildingX">
+                      <div th:replace="~{fragments/designIcons :: icon(buildingX)}"></div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+              <!-- Hidden input field for selected icon -->
+              <input name="icon" th:attr="id = 'selectedIconInput-' + ${iter.count}"
+                     th:value="${#strings.defaultString(renovationDesign.getIconName(), 'plus')}"
+                     type="hidden">
+              <input id="designId" th:value="${renovationDesign.getId()}" type="hidden">
+              <h5 class="card-title col-auto text-break" th:text="${renovationDesign.name}"></h5>
+            </div>
+            <div class="d-flex flex-wrap gap-1">
+              <span class="badge bg-primary d-flex flex-wrap"
+                    style="word-break: break-word; white-space: normal"
+                    th:each="room : ${renovationDesign.relatedRoom}"
+                    th:text="${room.name}">
+              </span>
+            </div>
+          </div>
+          <div class="ms-2 col-md-9">
+            <div
+                th:replace="~{fragments/showMore :: showMoreText(${renovationDesign.description}, 'taskDescription' + ${iter.count}, '', 3)}"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        initialiseDropdowns();
+    });
+
+</script>
+</body>
+</html>

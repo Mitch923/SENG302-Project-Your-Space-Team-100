@@ -1,0 +1,108 @@
+<!-- Styling is a mix of bootstrap docs and ChatGPT -->
+<div th:fragment="pagination(totalPages, contentURL)">
+  <div th:if="${totalPages > 1}">
+    <!-- Pagination + Search Row -->
+    <nav aria-label="Page navigation"
+         class="d-flex align-items-center justify-content-center justify-content-md-between flex-wrap">
+      <!-- Pagination buttons -->
+      <ul class="pagination mb-0 flex-wrap">
+        <!-- Previous Button -->
+        <li class="page-item" th:classappend="${pageNum == 0} ? ' disabled'">
+          <a class="page-link px-2 px-md-3 py-1 py-md-2"
+             href="#"
+             onclick="goToPageFromData(this); return false;"
+             style="font-size: 0.875rem;"
+             th:data-page="${pageNum - 1}"
+             th:data-url="${contentURL}">
+            <span class="d-none d-sm-inline">Previous</span>
+            <span class="d-sm-none">‹</span>
+          </a>
+        </li>
+
+        <!-- First page - ALWAYS show if totalPages > 1 and not already in the current window -->
+        <li class="page-item"
+            th:if="${totalPages > 1 and (totalPages > 10 ? pageNum > 2 : pageNum - 2 > 0)}">
+          <a class="page-link px-2 px-md-3 py-1 py-md-2"
+             href="#"
+             onclick="goToPageFromData(this); return false;"
+             style="font-size: 0.875rem;"
+             th:data-page="0"
+             th:data-url="${contentURL}">
+            1
+          </a>
+        </li>
+
+        <!-- Ellipsis before current window -->
+        <li class="page-item disabled" th:if="${totalPages > 10 and pageNum > 3}">
+          <span class="page-link px-2 px-md-3 py-1 py-md-2" style="font-size: 0.875rem;">…</span>
+        </li>
+
+        <!-- Pages around current page -->
+        <li class="page-item" th:classappend="${pageNumIter == pageNum} ? ' active'"
+            th:each="pageNumIter : ${#numbers.sequence( pageNum - 2 > 0 ? pageNum - 2 : 0, pageNum + 2 < totalPages ? pageNum + 2 : totalPages - 1 )}">
+          <a class="page-link px-2 px-md-3 py-1 py-md-2" href="#"
+             onclick="goToPageFromData(this); return false;"
+             style="font-size: 0.875rem;"
+             th:data-page="${pageNumIter}"
+             th:data-url="${contentURL}"
+             th:text="${pageNumIter + 1}"> </a>
+        </li>
+
+        <!-- Ellipsis after current window -->
+        <li class="page-item disabled"
+            th:if="${totalPages > 10 and pageNum + 2 < totalPages - 1}">
+          <span class="page-link px-2 px-md-3 py-1 py-md-2" style="font-size: 0.875rem;">…</span>
+        </li>
+
+        <!-- Last page - ALWAYS show if totalPages > 1 and not already in the current window -->
+        <li class="page-item"
+            th:if="${totalPages > 1 and (totalPages > 10 ? pageNum + 2 < totalPages - 1 : pageNum + 2 < totalPages - 1)}">
+          <a class="page-link px-2 px-md-3 py-1 py-md-2"
+             href="#"
+             onclick="goToPageFromData(this); return false;"
+             style="font-size: 0.875rem;"
+             th:data-page="${totalPages - 1}"
+             th:data-url="${contentURL}">
+            <span th:text="${totalPages}"></span>
+          </a>
+        </li>
+
+        <!-- Next Button -->
+        <li class="page-item" th:classappend="${pageNum == totalPages - 1} ? ' disabled'">
+          <a class="page-link px-2 px-md-3 py-1 py-md-2"
+             href="#"
+             onclick="goToPageFromData(this); return false;"
+             style="font-size: 0.875rem;"
+             th:data-page="${pageNum + 1}"
+             th:data-url="${contentURL}">
+            <span class="d-none d-sm-inline">Next</span>
+            <span class="d-sm-none">›</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Search input + button -->
+      <div class="d-flex align-items-center ms-3 mt-2 mt-md-0" th:if="${totalPages > 10}">
+        <input class="form-control me-2"
+               id="pageNumber"
+               placeholder="Page Number"
+               style="max-width: 100px; font-size: 0.875rem;"
+               th:data-url="${contentURL}"
+               th:oninput="'validatePageNumber()'"
+               type="text"/>
+        <button class="btn btn-outline-primary btn-sm"
+                for="pageNumber"
+                th:data-url="${contentURL}"
+                th:onclick="|goToPageFromSearch(document.getElementById('pageNumber'), ${totalPages}); return false;|">
+          Go
+        </button>
+      </div>
+    </nav>
+
+    <p class="text-danger text-center mt-2"
+       id="pageNumberError"
+       style="display: none;"
+       th:if="${totalPages > 10}">
+    </p>
+  </div>
+</div>

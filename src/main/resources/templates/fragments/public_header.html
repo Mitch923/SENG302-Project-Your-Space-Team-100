@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<header class="sticky-top shadow-sm" th:fragment="publicHeader">
+  <nav class="navbar  navbar-expand-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center gap-2 fs-2" th:href="@{/}">
+        <img alt="Your Space Logo" class="d-inline-block align-text-top" height="50"
+             th:src="@{/img/logo/hh-logo-500.gif}"
+             width="50">
+      </a>
+      <button aria-controls="navbarOffcanvasLg" aria-expanded="false" aria-label="Toggle navigation"
+              class="navbar-toggler"
+              data-bs-target="#navbarOffcanvasLg" data-bs-toggle="offcanvas"
+              type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div aria-labelledby="navbarOffcanvasLgLabel" class="offcanvas offcanvas-end w-50"
+           id="navbarOffcanvasLg"
+           tabindex="-1">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title w-100 text-center" id="navbarOffcanvasLgLabel">Menu</h5>
+          <button aria-label="Close" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                  type="button"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 row-gap-3">
+            <li class="nav-item d-flex justify-content-end me-3" th:if="${loggedIn != true}">
+              <a class="nav-link" th:href="@{/login}">Sign In</a>
+            </li>
+            <li class="nav-item d-flex justify-content-end me-3" th:if="${loggedIn != true}">
+              <a class="btn btn-sm btn-outline-primary align-content-center" th:href="@{/register}">Register</a>
+            </li>
+            <li class="nav-item d-flex justify-content-end me-3" th:unless="${loggedIn != true}">
+              <a class="nav-link" th:href="@{/profile}">My Profile</a>
+            </li>
+            <li class="nav-item d-flex justify-content-end" th:unless="${loggedIn != true}">
+              <form class="d-flex align-items-center h-100" method="post" th:action="@{/logout}">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Logout</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+</body>
+</html>

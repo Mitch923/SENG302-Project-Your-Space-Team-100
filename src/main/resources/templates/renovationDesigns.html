@@ -1,0 +1,41 @@
+<div class="d-grid gap-3 m-3 design-card">
+  <div class="cazrd-body">
+    <div class="d-flex align-items-start gap-3">
+      <h5 class="card-title" th:text="${renovationDesign.name}"></h5>
+    </div>
+    <p class="card-text" th:text="${renovationDesign.description}"></p>
+    <div class="d-flex justify-content-between">
+      <p class="text-muted" th:text="'Due: ' + ${renovationDesign.dueDateString}"></p>
+      <!-- Insert Edit Design button here!! :) -->
+    </div>
+  </div>
+</div>
+</div>
+<nav aria-label="Page navigation" class="d-flex gap-2 align-items-center mb-3">
+  <ul class="pagination m-0">
+    <!-- Previous button -->
+    <li class="page-item" th:classappend="${page == 1} ? 'disabled'">
+    </li>
+
+    <!-- First page link (if not the first page) -->
+    <li class="page-item" th:if="${page > 4}">
+    </li>
+
+    <!-- Page number links -->
+    <th:block th:each="pageIndex : ${#numbers.sequence(
+                            page <= 4 ? 1 : page - 2,
+                            page >= totalPages - 3 ? totalPages : page + 2)}">
+      <div class="page-item" th:classappend="${page == pageIndex} ? 'active'">
+      </div>
+    </th:block>
+
+    <!-- Last page link (if not up to the last 3 pages) -->
+    <li class="page-item" th:if="${page < totalPages - 3}">
+    </li>
+
+    <!-- Next button -->
+    <li class="page-item" th:classappend="${page >= totalPages} ? 'disabled'">
+    </li>
+  </ul>
+</nav>
+</div>

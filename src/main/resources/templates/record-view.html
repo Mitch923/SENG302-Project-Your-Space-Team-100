@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <base th:href="@{/}"/>
+  <script defer th:src="@{/js/viewRenovationRecord.js}" type="module"></script>
+  <script defer th:src="@{/js/autocompleteAddTag.js}" type="module"></script>
+  <link rel="stylesheet" th:href="@{/css/recordDisplayPage.css}"/>
+  <link rel="stylesheet" th:href="@{/css/autocompleteAddTag.css}"/>
+  <th:block th:insert="~{fragments/head :: head(
+      'Renovation Record | Your Space',
+      'My Renovation Record',
+      'renovation')}"></th:block>
+  <style>
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .container {
+      flex: 1;
+    }
+
+    .card-body p {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+
+<body>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+
+<div class="container my-4 d-flex flex-column">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item" th:if="${#ctx.session.accessMethod == 'myRenovations'}"><a
+          th:href="@{/myRenovations}">MyRenovations</a></li>
+      <li class="breadcrumb-item" th:if="${#ctx.session.accessMethod == 'browseRenovations'}"><a
+          th:href="@{/publicRenovations(renovationId=${renovationRecord.id})}">Back to search
+        results</a></li>
+      <li class="breadcrumb-item" th:if="${#ctx.session.accessMethod == 'myRenovationsSearch'}"><a
+          th:href="@{/searchMyRenovations}">Back to search results</a></li>
+      <li aria-current="page" class="breadcrumb-item active text-truncate"
+          th:text="${renovationRecord.name}"></li>
+    </ol>
+  </nav>
+  <div class="row">
+    <!-- Reno Info -->
+    <div class="col-md-8">
+      <div class="shadow-sm rounded-2 p-3" style="background-color: #FFFFFF;">
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div class="d-flex flex-nowrap align-items-center gap-2 mw-100">
+            <div
+                th:replace="~{fragments/showMore :: showMoreText(${renovationRecord.name}, 'nameText', 'fw-bold fs-2', 2)}"></div>
+            <a th:href="@{/editRenovation/{id}(id=${renovationRecord.id})}" th:if="${owned}">
+              Edit
+              <img alt="edit icon" class="ms-1" style="height: 1.2rem;"
+                   th:src="@{/img/icons/pencil.svg}"/>
+            </a>
+          </div>
+          <div class="d-flex flex-nowrap justify-content-end align-items-center form-check form-switch"
+               style="padding-left: 0;"
+               th:if="${owned}">
+            <label class="me-5" for="isPublicCheckbox" style="font-size: 1.3em">Public</label>
+            <input class="form-check-input me-3"
+                   id="isPublicCheckbox"
+                   role="switch"
+                   style="transform: scale(1.5); transform-origin: left center;"
+                   th:attr="onchange=|toggleIsPublic(this, '${renovationRecord.id}')|"
+                   th:checked="${renovationRecord.isPublicRecord()}"
+                   type="checkbox"
+            >
+          </div>
+
+        </div>
+
+        <div>
+          <div class="col-auto mb-1 mt-1">
+            <span class="badge bg-success me-1 d-inline-flex align-items-center p-1 mw-100"
+                  th:each="tag : ${tags}">
+              <span class="text-truncate" th:text="${tag.name}"></span>
+
+              <form
+                  class="m-0 p-0"
+                  method="post" style="display: flex; align-items: center;"
+                  th:action="@{/viewRenovation/{id}/remove-tag/{tagId}(id=${renovationRecord.id}, tagId=${tag.id})}"
+                  th:object="${tag}">
+                <input name="_csrf" th:value="${_csrf.token}" type="hidden"/>
+                <button aria-label="Remove tag" class="btn-close btn-close-white" style="font-size: 0.6rem;"
+                        th:if="${owned}" type="submit"></button>
+              </form>
+            </span>
+          </div>
+          <div class="d-flex align-items-center py-1">
+            <img alt="location icon" style="height: 0.8rem;" th:if="${locationFullAddress}"
+                 th:src="@{/img/icons/geo-alt.svg}"/>
+            <p class="m-2" th:text="${locationFullAddress} ? ${locationFullAddress} : ''"></p>
+          </div>
+          <div class="py-1">
+            <p th:if="${!#strings.isEmpty(renovationRecord.description)}"
+               th:text="${renovationRecord.description}">
+            </p>
+
+            <p th:if="${#strings.isEmpty(renovationRecord.description)}"
+               style="color: grey; font-style: italic;">
+              No description
+            </p>
+          </div>
+          <div class="py-1" th:if="${owned}">
+            <p class="text-danger"
+               id="tagError"
+               th:text="${errors != null and errors.containsKey('tag') ? errors.tag : ''}"></p>
+            <form autocomplete="off" id="addTagForm" method="post"
+                  th:action="@{/viewRenovation/addTags/{id}(id=${renovationRecord.id})}">
+              <div class="row">
+                <div class="autocomplete col-md-3 col-sm-8">
+                  <input autofocus class="form-control" id="tagName" maxlength="255"
+                         placeholder="Tag Name" th:classappend="${errors != null and errors.containsKey('tag') ? 'is-invalid' : ''}" th:name="tagName" th:value="*{tagName}"
+                         type="text">
+                </div>
+                <div class="col align-content-center">
+                  <button class="btn btn-primary btn-sm mt-3 mt-md-0" type="submit">Add Tag +</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rooms Section -->
+    <div class="col-md-auto me-md-auto">
+      <div class="shadow-sm rounded-2 p-3 mt-sm-3 mt-lg-0 overflow-y-scroll"
+           style="background-color: #FFFFFF; max-height: 16rem; padding-bottom: 1rem;">
+        <h4>Rooms</h4>
+        <ul class="list-group rounded-2">
+          <li class="list-group-item d-flex justify-content-between gap-4 align-items-center"
+              th:each="room : ${rooms}">
+            <span class="text-truncate" th:text="${room.name}"></span>
+            <span class="badge bg-primary rounded-pill"
+                  th:text="${#lists.size(room.designsForRoom)}"></span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Spacer div so renovationDesigns section stays at bottom when there is a short reno description -->
+  <div class="flex-grow-1 d-none d-lg-flex"></div>
+
+  <!-- Designs Section -->
+  <div class="row mt-3">
+    <div class="col">
+      <div class="shadow-sm rounded-2 p-3" style="background-color: #FFFFFF;">
+        <div
+            class="d-flex align-items-center justify-content-center justify-content-lg-start flex-column flex-md-row gap-2 gap-4 mb-2">
+          <h3>Designs</h3>
+          <form th:if="${owned}"
+                th:action="@{renovationRecord/{id}/createDesign(id=${renovationRecord.id})}"
+                method="post">
+            <button class="btn btn-primary btn-sm w-auto" type="submit">
+              Create Design +
+            </button>
+          </form>
+          <a th:href="@{/viewRenovation/{id}/designs(id=${renovationRecord.id})}">View all
+            Designs</a>
+        </div>
+        <div class="container d-flex flex-column justify-content-between" id="designContainer"
+             th:if="${!renovationRecord.designsForRenovation.empty}">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/getDesignsPartialView.js}" type="module"></script>
+<script th:src="@{/js/fieldValidation.js}"></script>
+<script th:src="@{/js/getTagsPartialView.js}"></script>
+<script th:src="@{/js/fieldValidation.js}"></script>
+<script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(
+            tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+    document.addEventListener("DOMContentLoaded", () => {
+        applyDesigns([[${renoId}]][[${id}]], [[${#ctx.session.designSearchQuery.page}]],
+                [[${#ctx.session.designSearchQuery.resultsPerPage}]]);
+        initialiseDropdowns();
+
+        document.getElementById("tagName").addEventListener("keyup", () => {
+            validateTagName();
+        })
+    });
+</script>
+</body>
+</html>

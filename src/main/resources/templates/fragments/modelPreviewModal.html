@@ -1,0 +1,33 @@
+<div class="h-100" th:fragment="modelPreviewModal()">
+  <div aria-hidden="true" aria-labelledby="previewModalLabel" class="modal fade" id="previewModal"
+       tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content" style="height: 80vh">
+        <div class="modal-body">
+          <div class="d-flex flex-row justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <label class="form-label mb-0" for="modelName">Name:</label>
+              <input class="form-control" id="modelName" name="modelName" style="max-width: 300px;"
+                     type="text">
+            </div>
+            <input hidden id="parallelTextureInput" type="file">
+            <div class="d-flex flex-column align-items-center">
+              <button class="btn btn-secondary"
+                      onclick="document.getElementById('parallelTextureInput').click()">Choose
+                Texture
+              </button>
+              <small class="text-muted text-center">Textures must be of type .png or .jpg</small>
+            </div>
+          </div>
+        </div>
+        <div class="flex-grow-1 w-100 h-100" id="previewSceneContainer" style="min-height: 200px;">
+
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-primary" id="uploadButton" type="button">Upload</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<div class="container mt-2">
+  <div class="row g-4">
+    <h5 class="text-center w-100 text-secondary fw-light fs-5"
+        th:if="${#lists.isEmpty(competitions)}">
+      No Competitions!
+    </h5>
+
+    <div class="col-6 col-sm-6 col-md-4 col-lg-3"
+         th:each="tuple : ${competitions}">
+      <div th:replace="~{competitions/competitionPreviewFragment :: competitionPreview(
+      ${tuple[0]},
+      ${#lists.isEmpty(tuple[1]) ? null : (tuple[1])}
+  )}">
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col d-flex justify-content-center mt-2">
+      <div th:replace="~{fragments/pagination :: pagination(
+          ${totalPages},
+          @{/previous-competitions/paged}
+      )}"></div>
+    </div>
+  </div>
+</div>

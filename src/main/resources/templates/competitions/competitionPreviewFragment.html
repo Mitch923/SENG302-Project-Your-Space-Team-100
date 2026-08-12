@@ -1,0 +1,76 @@
+<div class="h-100" th:fragment="competitionPreview(competition, winningDesign)">
+  <div class="card hover-animate h-100">
+    <a class="text-decoration-none text-black"
+       th:href="@{/competitionDetails/{id}(id=${competition.id})}">
+
+      <div class="position-relative">
+        <!-- Thumbnail -->
+        <img alt="Winning design preview"
+             class="card-img-top img-fluid"
+             style="object-fit: cover; object-position: center 50%; aspect-ratio: 16/9;"
+             th:attr="onerror=|this.onerror=null; this.src='@{/img/defaultDesignPreview.jpeg}';|"
+             th:src="${winningDesign != null and winningDesign.thumbnailFilePath != null} ? @{${winningDesign.thumbnailFilePath}} : @{/img/defaultDesignPreview.jpeg}"/>
+
+        <!-- Trophy badge (top-left) -->
+        <div
+            class="position-absolute m-1 top-0 start-0 d-flex justify-content-center align-items-center"
+            th:if="${winningDesign != null}">
+          <div class="z-2 d-flex justify-content-center align-items-center"
+               style="background-color:#DBA73F;
+                      width:1.5rem;
+                      height:1.5rem;
+                      border-radius:50%;">
+            <svg class="m-1" fill="none" height="2rem" viewBox="0 0 24 24" width="2rem"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path
+                  d="M4 8L6 20H18L20 8M4 8L5.71624 9.37299C6.83218 10.2657 7.39014 10.7121 7.95256 10.7814C8.4453 10.8421 8.94299 10.7173 9.34885 10.4314C9.81211 10.1051 10.0936 9.4483 10.6565 8.13476L12 5M4 8C4.55228 8 5 7.55228 5 7C5 6.44772 4.55228 6 4 6C3.44772 6 3 6.44772 3 7C3 7.55228 3.44772 8 4 8ZM20 8L18.2838 9.373C17.1678 10.2657 16.6099 10.7121 16.0474 10.7814C15.5547 10.8421 15.057 10.7173 14.6511 10.4314C14.1879 10.1051 13.9064 9.4483 13.3435 8.13476L12 5M20 8C20.5523 8 21 7.55228 21 7C21 6.44772 20.5523 6 20 6C19.4477 6 19 6.44772 19 7C19 7.55228 19.4477 8 20 8ZM12 5C12.5523 5 13 4.55228 13 4C13 3.44772 12.5523 3 12 3C11.4477 3 11 3.44772 11 4C11 4.55228 11.4477 5 12 5ZM12 4H12.01M20 7H20.01M4 7H4.01"
+                  stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Vote count badge (top-right) -->
+        <div class="position-absolute top-0 end-0 badge rounded-pill m-1 d-flex"
+             style="background-color: #c34040"
+             th:if="${winningDesign != null}">
+          <span class="me-1" th:text="${winningDesign.voteCount}"></span>
+          <svg class="bi bi-heart" fill="currentColor" height="0.75rem"
+               viewBox="0 0 16 16" width="0.75rem" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143q.09.083.176.171a3 3 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <!-- Competition theme -->
+        <h5 class="card-title text-truncate" th:text="${competition.theme}"></h5>
+
+        <!-- Profile pic + design name inline -->
+        <div class="d-flex align-items-center gap-2" th:if="${winningDesign != null}">
+          <!-- Profile picture -->
+          <img alt="Profile picture"
+               class="circular-image"
+               style="object-fit: cover; aspect-ratio: 1/1; width: 32px; height: 32px;
+                      border: 1px solid white; box-sizing: border-box;"
+               th:if="${winningDesign.user != null and winningDesign.user.profileImagePath != null}"
+               th:src="@{${winningDesign.user.profileImagePath}}"/>
+
+          <!-- Fallback if missing -->
+          <img alt="Default profile picture"
+               class="circular-image"
+               style="object-fit: cover; aspect-ratio: 1/1; width: 32px; height: 32px;
+                      border: 1px solid white; box-sizing: border-box;"
+               th:if="${winningDesign.user == null or winningDesign.user.profileImagePath == null}"
+               th:src="@{/img/user_profile_images/Default_pfp.svg}"/>
+
+          <!-- Design name -->
+          <p class="card-text text-truncate text-muted m-0"
+             th:if="${winningDesign.description != null}"
+             th:text="${winningDesign.name}"></p>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>

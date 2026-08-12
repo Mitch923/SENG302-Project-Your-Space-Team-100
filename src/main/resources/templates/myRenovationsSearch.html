@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta context="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <base th:href="@{/}"/>
+
+  <th:block th:insert="~{fragments/head :: head(
+      'My Renovations Search | Your Space',
+      'My Renovations Search',
+      'renovation, contracter, construction')}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/myRenovationsTemplate.css}"/>
+</head>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+<body>
+<div class="container my-4 d-flex flex-column">
+  <div class="rounded-2 bg-white shadow-sm p-3 mb-3">
+    <h2 class="text-bold text-dark mb-0">Search Results: </h2>
+  </div>
+  <div class="mb-3 rounded-2 bg-white shadow-sm flex-grow-1 min-vh-50 p-3">
+    <h5 class="display-5 ms-3 me-3 mt-3 mb-3" th:if="${emptyResult}">No renovations match your
+      search</h5>
+    <div class="row">
+      <div id="renovationsContainer" th:if="${!emptyResult}">
+
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/getMyRenovationsSearchView.js}" type="module"></script>
+</body>
+<script th:inline="javascript">
+    window.onload = function () {
+        applyInitialRenovations([[${#ctx.session.searchMyRenovationsSearchQuery.query}]],
+                [[${#ctx.session.searchMyRenovationsSearchQuery.page}]]);
+    }
+</script>
+</html>

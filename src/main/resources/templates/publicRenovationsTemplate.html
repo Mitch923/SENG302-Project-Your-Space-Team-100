@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta context="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <base th:href="@{/}">
+  <th:block th:insert="~{fragments/head :: head(
+      'Browse Renovations | Your Space',
+      'Public Renovations',
+      'renovation, contracter, construction')}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/myRenovationsTemplate.css}"/>
+</head>
+<body>
+<header th:replace="~{fragments/internal_header:: internalHeader}"></header>
+<!--script purposely not deferred so that event listener works - see script -->
+<!-- TODO: change / turn this script into a new one to suit pagination properly -->
+<script th:src="@{/js/myRenovations.js}"></script>
+
+<div class="container my-4 d-flex flex-column">
+  <div class="shadow-sm rounded-2 mb-3 p-3 bg-white">
+    <h2 class="text-bold text-dark mb-0">Public Renovations: </h2>
+  </div>
+  <div class="mb-3 rounded-2 bg-white shadow-sm flex-grow-1 min-vh-50 p-3">
+    <!-- class has padding at the top to account for the being no top margin in the cards -->
+    <h5 class="display-5 ms-3 me-3 mt-3 mb-3" th:if="${renovations.empty}">There are no public
+      renovations</h5>
+
+    <div id="publicRenovationsContainer">
+
+    </div>
+  </div>
+  <div>
+  </div>
+</div>
+<script th:src="@{/js/getPublicRenovationsView.js}" type="module"></script>
+</body>
+<script th:inline="javascript">
+    window.onload = function () {
+        applyInitialPublicRenovations([[${#ctx.session.renovationSearchQuery.page}]]);
+    }
+</script>
+</html>

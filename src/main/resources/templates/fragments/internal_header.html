@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+<header class="sticky-top shadow-sm" style="z-index: 50;" th:fragment="internalHeader">
+  <!-- Modal -->
+  <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="searchModal"
+       tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Search Renovations</h5>
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                  type="button"></button>
+        </div>
+        <div class="modal-body">
+          <form class="d-flex" id="searchFormModal" method="GET"
+                th:action="@{/searchMyRenovations}">
+            <input aria-label="Search" class="form-control me-3" id="searchInputModal" name="query"
+                   placeholder="Search" type="text">
+            <button class="btn btn-outline-primary" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="navbar navbar-light bg-light navbar-expand-md">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center">
+        <a class="navbar-brand d-flex align-items-center gap-2 fs-2" th:href="@{/home}">
+          <img alt="Your Space Logo" class="d-inline-block align-text-top" height="50"
+               th:src="@{/img/logo/hh-logo-500.gif}"
+               width="50">
+        </a>
+        <button aria-label="Open search modal" class="d-lg-none btn btn-link p-0"
+                data-bs-target="#searchModal"
+                data-bs-toggle="modal" id="search-icon">
+          <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+            <!-- Font Awesome Free 5.15.3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) -->
+            <path
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/>
+          </svg>
+        </button>
+      </div>
+      <form class="d-none d-lg-flex" id="desktop-search" method="GET"
+            th:action="@{searchMyRenovations}">
+        <input aria-label="Search Renovations" class="form-control me-3" id="desktopSearchInput"
+               name="query"
+               placeholder="Search Renovations"
+               th:value="${#ctx.session.searchMyRenovationsSearchQuery == null ? '' : #ctx.session.searchMyRenovationsSearchQuery.getQuery()}"
+               type="text">
+        <button class="btn btn-outline-primary" type="submit">Search</button>
+      </form>
+      <button aria-controls="navbarOffcanvasLg" aria-expanded="false" aria-label="Toggle navigation"
+              class="navbar-toggler"
+              data-bs-target="#navbarOffcanvasLg" data-bs-toggle="offcanvas"
+              type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div aria-labelledby="navbarOffcanvasLgLabel" class="offcanvas offcanvas-end w-75"
+           id="navbarOffcanvasLg"
+           tabindex="-1">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title w-100 text-center" id="navbarOffcanvasLgLabel">Menu</h5>
+          <button aria-label="Close" class="btn-close text-reset" data-bs-dismiss="offcanvas"
+                  type="button"></button>
+        </div>
+        <div class="offcanvas-body">
+          <ul class="navbar-nav justify-content-end flex-grow-1 row-gap-3">
+            <li class="nav-item d-flex justify-content-end me-3">
+              <a class="nav-link d-flex align-items-center h-100" th:href="@{/publicRenovations}">Browse
+                Renovations</a>
+            </li>
+            <li class="nav-item d-flex justify-content-end me-3">
+              <a class="nav-link d-flex align-items-center h-100" th:href="@{/myRenovations}">My
+                Renovations</a>
+            </li>
+            <li class="nav-item d-flex justify-content-end me-3">
+              <a class="nav-link d-flex align-items-center h-100" th:href="@{/home}">Home</a>
+            </li>
+            <li class="nav-item d-flex justify-content-end me-3">
+              <a class="nav-link d-flex align-items-center justify-content-end h-100"
+                 th:href="@{/profile}">
+                <img alt="My Profile Picture"
+                     class="d-inline-block circular-image"
+                     height="50" id="profilePicture" th:src="@{${profileImagePath}}"
+                     width="50">
+              </a>
+            </li>
+            <li class="nav-item d-flex justify-content-end">
+              <form class="d-flex align-items-center h-100" method="post" th:action="@{/logout}">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Logout</button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <script>
+      /**
+       * Script written by ChatGPT. Its purpose is to move the search modal out of the header and
+       * into the body of the html when opened. This fixes the search bar modal being covered by
+       * the modal backdrop on mobile.
+       */
+      document.addEventListener('DOMContentLoaded', () => {
+          const modalEl = document.getElementById('searchModal');
+          if (!modalEl) {
+              return;
+          }
+
+          let placeholder = null;
+
+          modalEl.addEventListener('show.bs.modal', () => {
+              // If modal is not already a child of body, move it there and keep a placeholder
+              if (modalEl.parentNode !== document.body) {
+                  placeholder = document.createComment('modal-placeholder');
+                  modalEl.parentNode.replaceChild(placeholder, modalEl);
+                  document.body.appendChild(modalEl);
+              }
+          });
+
+          modalEl.addEventListener('hidden.bs.modal', () => {
+              // Move the modal back to its original location after it's hidden
+              if (placeholder && placeholder.parentNode) {
+                  placeholder.parentNode.replaceChild(modalEl, placeholder);
+                  placeholder = null;
+              }
+          });
+      });
+  </script>
+</header>
+</body>
+</html>

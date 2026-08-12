@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerfiles">
+  <meta charset="UTF-8"/>
+  <link rel="stylesheet" th:href="@{/css/styles.css}">
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+</head>
+<body>
+<div class="shadow p-3" th:fragment="navigationBar(currentPage, renovationId)">
+  <a class="card-title fs-3 ms-3 text-decoration-none"
+     th:classappend="${currentPage} == 'home' ? 'text-decoration-underline' : ''"
+     th:href="@{/home}">Home</a>
+  <a class="card-title fs-3 ms-3 text-decoration-none"
+     th:classappend="${currentPage} == 'myRenovations' ? 'text-decoration-underline' : ''"
+     th:href="@{/myRenovations}">My Renovations</a>
+  <a class="card-title fs-5 ms-3 text-decoration-none"
+     th:classappend="${currentPage} == 'viewRenovation' ? 'text-decoration-underline' : 'd-none'"
+     th:classremove="${currentPage} == 'editRenovation' ? 'd-none' : null"
+     th:href="@{/viewRenovation(id=${renovationId})}">> View Renovation</a>
+  <a class="card-title fs-5 ms-3 text-decoration-none"
+     th:classappend="${currentPage} == 'editRenovation' ? 'text-decoration-underline' : 'd-none'"
+     th:href="@{/editRenovation/{id}(id=${renovationId})}">> Edit Renovation</a>
+  <a class="card-title fs-5 ms-3 text-decoration-none"
+     th:classappend="${currentPage} == 'createRenovation' ? 'text-decoration-underline' : 'd-none'"
+     th:href="@{/createRenovationForm}">> Create Renovation</a>
+</div>
+</body>
+</html>

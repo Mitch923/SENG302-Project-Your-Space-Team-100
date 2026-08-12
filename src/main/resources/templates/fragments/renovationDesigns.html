@@ -1,0 +1,94 @@
+<div th:fragment="renovationDesigns(owned, id, renovationDesigns, renovationRecord)">
+  <link rel="stylesheet" th:href="@{/css/pagination.css}"/>
+
+  <div th:with="searchQuery=${#ctx.session.designSearchQuery}">
+
+    <!-- Cards Row -->
+    <div
+        class="row row-cols-auto gap-2 gap-lg-4 justify-content-center justify-content-lg-start design-card mb-4">
+      <div class="col" th:each="renovationDesign : ${renovationDesigns}">
+        <div
+            th:replace="~{fragments/designPreviewFragment :: designPreview(${renovationDesign}, ${owned}, 'renovationDesigns')}"></div>
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    <nav aria-label="Page navigation"
+         class="pagination-wrapper d-flex flex-column flex-lg-row flex-wrap align-items-center gap-2 mb-3 justify-content-center justify-content-lg-start"
+         th:if="${searchQuery.totalPages > 1}">
+
+      <ul class="pagination m-0 flex-wrap justify-content-center">
+        <!-- Previous button -->
+        <li class="page-item" th:classappend="${searchQuery.page == 1} ? 'disabled'">
+          <button class="page-link"
+                  th:onclick="'applyDesigns('+${id}+', '+(${searchQuery.page} - 1)+', '+${searchQuery.resultsPerPage}+')'">
+            Prev
+          </button>
+        </li>
+
+        <!-- First page and ellipsis -->
+        <li class="page-item" th:if="${searchQuery.page > 4}">
+          <button class="page-link"
+                  th:onclick="'applyDesigns('+${id}+', 1, '+${searchQuery.resultsPerPage}+')'">1
+          </button>
+        </li>
+        <li class="page-item disabled" th:if="${searchQuery.page > 4}">
+          <span class="page-link">…</span>
+        </li>
+
+        <!-- Page numbers -->
+        <th:block th:each="pageIndex : ${#numbers.sequence(
+                (searchQuery.page <= 4 ? 1 : searchQuery.page - 2),
+                (searchQuery.page >= searchQuery.totalPages - 3 ?
+                  searchQuery.totalPages : searchQuery.page + 2))}">
+          <li class="page-item" th:classappend="${searchQuery.page == pageIndex} ? 'active'">
+            <button class="page-link"
+                    th:onclick="'applyDesigns('+${id}+', '+${pageIndex}+', '+${searchQuery.resultsPerPage}+')'"
+                    th:text="${pageIndex}"></button>
+          </li>
+        </th:block>
+
+        <!-- Ellipsis and last page -->
+        <li class="page-item disabled"
+            th:if="${searchQuery.page < searchQuery.totalPages - 3}">
+          <span class="page-link">…</span>
+        </li>
+        <li class="page-item"
+            th:if="${searchQuery.page < searchQuery.totalPages - 3}">
+          <button class="page-link"
+                  th:onclick="'applyDesigns('+${id}+', '+${searchQuery.totalPages}+', '+${searchQuery.resultsPerPage}+')'"
+                  th:text="${searchQuery.totalPages}"></button>
+        </li>
+
+        <!-- Next button -->
+        <li class="page-item"
+            th:classappend="${searchQuery.page >= searchQuery.totalPages} ? 'disabled'">
+          <button class="page-link"
+                  th:onclick="'applyDesigns('+${id}+', '+(${searchQuery.page} + 1)+', '+${searchQuery.resultsPerPage}+')'">
+            Next
+          </button>
+        </li>
+      </ul>
+
+      <!-- Jump to Page Input -->
+      <div class="d-flex flex-column flex-sm-row align-items-start gap-2"
+           th:if="${searchQuery.totalPages > 10}">
+        <input class="form-control"
+               id="pageNumber"
+               placeholder="Page Number"
+               th:oninput="'validatePageNumber()'"
+               type="text"/>
+
+        <button class="btn btn-outline-primary"
+                th:onclick="'applyDesignsCustomPageNum('+${id}+', '+${searchQuery.totalPages}+', '+${searchQuery.resultsPerPage}+')'">
+          Confirm
+        </button>
+
+
+      </div>
+      <p class="text-danger mb-0" id="pageNumberError"
+         style="display: none;"></p>
+    </nav>
+
+  </div>
+</div>

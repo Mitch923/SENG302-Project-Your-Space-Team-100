@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <th:block th:insert="~{fragments/head :: head(
+      'Your Space',
+      'Learn more about how Your Space can help you renovate!',
+      'about home helper')}"></th:block>
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+<!-- Header -->
+<div th:replace="~{fragments/public_header :: publicHeader}"></div>
+
+<!-- Hero Section -->
+<section class="d-flex align-items-center position-relative overflow-hidden">
+  <div class="container">
+    <div class="row g-5 align-items-center my-auto">
+
+      <!-- Left: Text -->
+      <div class="col-12 col-lg-6 text-center text-lg-start position-relative z-2">
+        <h1 class="display-4 fw-bold">Design Spaces, Unlock Creativity</h1>
+        <p class="lead mb-4">
+          Build stunning 3D room designs to bring your vision to life.<br/>
+          Compete weekly and showcase your talent to the world.
+        </p>
+        <div
+            class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
+          <a class="btn btn-primary btn-lg" th:href="@{/register}">Start Designing</a>
+        </div>
+      </div>
+
+      <!-- Right: Hero Image -->
+      <div class="col-12 col-lg-6 text-center position-relative">
+        <img alt="3D Room Design Preview"
+             class="hero-img"
+             loading="lazy"
+             th:src="@{/img/hero.gif}">
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

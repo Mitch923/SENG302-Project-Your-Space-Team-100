@@ -1,0 +1,61 @@
+/*Combination of content from w3 schools and chat gpt https://www.w3schools.com/howto/howto_js_autocomplete.asp*/
+/* Apply Bootstrap's form-control for input styling */
+input.form-control-sm {
+  border: 1px solid transparent; /* Overriding default border */
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Container for autocomplete */
+.autocomplete {
+  position: relative;
+  display: inline-block;
+  width: 100%; /* Ensures autocomplete container matches input width */
+  justify-content: center;
+}
+
+/* Custom styling for autocomplete items dropdown */
+.autocomplete-items {
+  position: absolute;
+  top: 100%;
+  border: 1px solid #d4d4d4;
+  border-top: none;
+  z-index: 99;
+  background-color: #fff;
+  max-height: 300px; /* Limit height if there are many items */
+  overflow-y: auto; /* Allow scrolling */
+  width: 80%;
+}
+
+/* Styling individual autocomplete items */
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+  font-size: 14px; /* Adjust the font size as needed */
+}
+
+/* Hover effect on autocomplete items */
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+/* Styling for active autocomplete item */
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+/* Override for non-interactive items */
+.autocomplete-items div.no-interaction {
+  cursor: default !important;
+  pointer-events: none !important;
+  background-color: #fff !important; /* same as base to avoid hover color */
+}
+
+/* Also override the hover if it still applies */
+.autocomplete-items div.no-interaction:hover {
+  background-color: #fff !important;
+}

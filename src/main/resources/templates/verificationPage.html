@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta context="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <th:block th:insert="~{fragments/head :: head(
+      'Verify | Your Space',
+      'Verify',
+      'Verify')}"></th:block>
+</head>
+<body class="bg-dark-subtle">
+
+<div class="container-fluid d-flex mt-5 justify-content-center verification-card">
+  <div class="card shadow-sm mb-3">
+
+    <div class="card-body">
+
+      <form id="confirmationCode" method="POST" th:action="@{/verification}">
+        <input id="userId" name="userId" th:value="${userId}" type="hidden">
+
+        <div class="d-flex justify-content-between align-items-center p-2">
+          <h1 class="card-title">Verify Account</h1>
+          <a class="btn btn-secondary justify-content-end p-2 m-4" th:href="@{/}">Cancel</a>
+        </div>
+        <div class="ms-2 me-2">
+          <p class="font-size-large wrapped-text" style="max-width: 300px"
+             th:text="'We\'ve sent a 4 digit verification code to ' + (${userEmail} != null ? ${userEmail} : 'your email') + '. ' +
+              'Please enter the code below to verify your account.'">
+          </p>
+        </div>
+
+        <div class="form-group wp-2">
+          <label for="verificationCode">Enter your verification code:</label>
+          <input class="form-control form-control-lg" id="verificationCode" name="verificationCode"
+                 oninput="this.value = this.value.trim();"
+                 placeholder="Code"
+                 th:classappend="${error != null ? 'is-invalid' : ''}"
+                 th:value="${code}"
+                 type="text">
+        </div>
+
+        <div class="form-group p-2 d-grid">
+          <p class="text-danger" th:if="${error}" th:text="${error}"></p>
+        </div>
+
+        <div class="form-group p-2 d-grid">
+          <button class="btn btn-primary btn-block" type="submit">Confirm Code</button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+    // Copied this from registerPage.html
+    // Code created alongside ChatGPT
+    // prompt: how do I make this submit button wait for the js validate function,
+    // and if true then submit the post request?
+    document.getElementById("confirmationCode").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the form from submitting immediately
+
+        this.submit(); // Manually submit the form
+    });
+</script>
+
+
+</body>
+</html>

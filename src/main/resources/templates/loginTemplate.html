@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:insert="~{fragments/head :: head(
+      'Login | Your Space',
+      'Login',
+      'Login')}"></th:block>
+</head>
+<body class="bg-dark-subtle">
+<div th:replace="~{fragments/public_header:: publicHeader}"></div>
+<div class="container-fluid vh-80 d-flex mt-5 justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-sm-10 col-md-4 col-lg-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <form action="login" id="loginForm" method="POST" th:action="@{/login}">
+            <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+            <!-- ChatGPT code for csrf token -->
+            <div class="d-flex justify-content-between align-items-center p-2">
+              <h1 class="card-title">Login</h1>
+              <a class="btn btn-secondary p-2" th:href="@{/}">Cancel</a>
+            </div>
+            <div class="form-group p-2">
+              <label for="email">Email</label>
+              <input class="form-control" id="email" name="email"
+                     onblur="validateEmailLoginPage()" placeholder="Email"
+                     th:value="${email}" type="text">
+              <p class="text-danger" id="emailError" style="display: none;"></p>
+            </div>
+            <div class="form-group p-2">
+              <label for="password">Password</label>
+              <input class="form-control" id="password" name="password" placeholder="Password"
+                     type="password">
+            </div>
+            <p class="text-danger p-2" th:if="${error}" th:text="${error}"></p>
+            <p class="text-success p-2" id="successMessage"
+               th:if="${successfulVerification}" th:text="${successfulVerification}"></p>
+            <div class="d-grid p-2">
+              <button class="btn btn-primary btn-block" id="signInBtn" type="submit">Sign In
+              </button>
+            </div>
+          </form>
+          <p class="text-center"><small>Not registered? <a href="register">Create an
+            account</a></small></p>
+          <p class="text-center"><small><a href="reset">Forgot your password?</a></small></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script defer th:src="@{/js/fieldValidation.js}"></script>
+<script>
+    // Code created alongside ChatGPT
+    // prompt: how do I make this submit button wait for the js validate function,
+    // and if true then submit the post request?
+    document.getElementById("loginForm").addEventListener("submit", function (event) {
+        event.preventDefault(); // Prevent the form from submitting immediately
+
+        // Run all validation functions
+        const valid = validateEmailLoginPage();
+
+        // If all validations are true, submit the form
+        if (valid) {
+            this.submit(); // Manually submit the form
+        }
+    });
+
+    document.getElementById("loginForm").addEventListener("keypress", function (event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            document.getElementById("signInBtn").click();
+        }
+    });
+</script>
+</body>
+</html>

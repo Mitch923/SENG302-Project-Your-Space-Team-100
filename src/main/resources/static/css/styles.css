@@ -1,0 +1,114 @@
+
+body {
+  background-color: #f6f6f6;
+}
+
+/* Use this class in conjunction with the script in utils.js to create a 'show more' button */
+.truncate-multiline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.break-by-letter,
+.breadcrumb-item a {
+  word-break: break-all;
+  overflow-wrap: break-word;
+}
+
+.breadcrumb-item {
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.breadcrumb-item a {
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  display: inline-block;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.truncate-lines-3 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Simulate hover effect when dropdown is open */
+.hover-animate:hover,
+.hover-animate.dropdown-open {
+  transform: scale(1.01);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 49;
+}
+
+/* Disable hover effect */
+.hover-animate.no-hover:hover {
+  transform: none;
+  box-shadow: none;
+  z-index: auto;
+}
+
+@media (min-width: 768px) {
+  .w-sm-auto {
+    width: auto !important;
+  }
+}
+
+.mw-200px {
+  max-width: 200px !important;
+}
+
+.min-w-100px {
+  min-width: 100px !important;
+}
+
+.min-w-200px {
+  min-width: 200px !important;
+}
+
+@media (min-width: 768px) {
+  .custom-margin-md {
+    margin-left: 10rem !important;
+  }
+}
+
+/* Make the image larger than half and let text overlap */
+.hero-img {
+  width: 150%;
+  max-width: none;
+  position: relative;
+  left: -30%;
+  z-index: 1;
+}
+
+.z-2 {
+  z-index: 2;
+  position: relative;
+}
+
+#object-details-menu.nav-tabs {
+  border-bottom: none;
+}
+
+.no-rounded-top-left-corner {
+  border-top-right-radius: 0 !important;
+}
+
+.tab-button.active {
+  background-color: #212529 !important;
+  font-weight: bold;
+  opacity: 0.75;
+}
+
+.tab-button {
+  opacity: 0.75;
+  background-color: #393B3D !important;
+  font-weight: normal;
+  color: #fff !important;
+}

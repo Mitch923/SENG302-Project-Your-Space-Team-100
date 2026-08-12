@@ -1,0 +1,184 @@
+stages:
+  - tagChecking
+  - setup
+  - build
+  - test
+  - test-reports
+  - sonarqube
+  - deploy
+
+workflow:
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+
+# Ensure node_modules exists
+# Uses caches and artifacts to optimize builds
+npm-install:
+  stage: setup
+  script:
+    - ./gradlew npm_ci
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - node_modules/
+  artifacts:
+    paths:
+      - node_modules/
+    expire_in: 1 day
+
+tag-checker:
+  stage: tagChecking
+  script:
+    - python3 tag_checker.py $CI_COMMIT_TAG
+  only:
+    - tags
+
+junit:
+  stage: test
+  script:
+    - ./gradlew test
+  artifacts:
+    paths:
+      - build/jacoco/test.exec
+  dependencies:
+    - npm-install
+
+sonarqube-report:
+  stage: sonarqube
+  script:
+    - ./gradlew sonarqube
+  dependencies:
+    - npm-install
+    - generate-test-coverage-reports
+    - jest-tests
+  variables:
+    SONAR_TOKEN: $SONARQUBE_TOKEN
+    SONAR_HOST_URL: $SONAR_HOST_URL
+
+integration-tests:
+  stage: test
+  script:
+    - ./gradlew integration
+  artifacts:
+    paths:
+      - build/jacoco/integration.exec
+  dependencies:
+    - npm-install
+
+cucumber-acceptance-tests:
+  stage: test
+  script:
+    - ./gradlew cucumber
+  artifacts:
+    paths:
+      - build/jacoco/cucumber.exec
+  dependencies:
+    - npm-install
+
+jest-tests:
+  stage: test
+  script:
+    - ./gradlew jest
+  artifacts:
+    paths:
+      - build/reports/coverage/jest/lcov.info
+  dependencies:
+    - npm-install
+
+generate-test-coverage-reports:
+  stage: test-reports
+  dependencies:
+    - npm-install
+    - junit
+    - integration-tests
+    - cucumber-acceptance-tests
+    - end-to-end
+  script:
+    - ./gradlew jacocoTestReport
+  artifacts:
+    paths:
+      - build/jacoco/test-report.xml
+
+end-to-end:
+  stage: test
+  script:
+    - ./gradlew end2end
+  artifacts:
+    paths:
+      - build/jacoco/end2end.exec
+  dependencies:
+    - npm-install
+
+# builds all branches, except dev and main
+branch-build:
+  stage: build
+  script:
+    - ./gradlew bootJar
+  artifacts:
+    paths:
+      - build/libs
+  except:
+    - tags
+    - main
+    - dev
+  dependencies:
+    - npm-install
+
+deploy-staging:
+  stage: deploy
+  script:
+    - ./gradlew bootJar -Pproduction
+    - rm -rf /home/gitlab-runner/staging/ || true
+    - mkdir /home/gitlab-runner/staging/
+    - cp -r ./build/libs /home/gitlab-runner/staging
+    - rm -rf /home/gitlab-runner/uploads-staging
+    - mkdir -p /home/gitlab-runner/uploads-staging
+    - cp -r ./uploads/* /home/gitlab-runner/uploads-staging
+    - cp runner-scripts/staging.sh /home/gitlab-runner/staging.sh
+    - chmod u+x /home/gitlab-runner/staging.sh
+    - echo "export DB_USERNAME=${DB_USERNAME}" > /home/gitlab-runner/staging/.env
+    - echo "export DB_PASSWORD=${DB_PASSWORD}" >> /home/gitlab-runner/staging/.env
+    - echo "export EMAIL_USERNAME=${EMAIL_USERNAME}" >> /home/gitlab-runner/staging/.env
+    - echo "export EMAIL_PASSWORD=\"${EMAIL_PASSWORD}\"" >> /home/gitlab-runner/staging/.env
+    - echo "export MAPBOX_KEY=${MAPBOX_KEY}" >> /home/gitlab-runner/staging/.env
+    - echo "export IPAPI_KEY=${IPAPI_KEY}" >> /home/gitlab-runner/staging/.env
+    - echo "export PERSPECTIVE_API_KEY=${PERSPECTIVE_API_KEY}" >> /home/gitlab-runner/staging/.env
+    - sudo systemctl restart staging
+  artifacts:
+    paths:
+      - build/libs
+  only:
+    - dev
+  dependencies:
+    - npm-install
+
+deploy-production:
+  stage: deploy
+  script:
+    - ./gradlew bootJar -Pproduction
+    - rm -rf /home/gitlab-runner/production/ || true
+    - mkdir /home/gitlab-runner/production/
+    - cp -r ./build/libs /home/gitlab-runner/production
+    - cp -rn ./uploads/* /home/gitlab-runner/uploads
+    - cp runner-scripts/production.sh /home/gitlab-runner/production.sh
+    - chmod u+x /home/gitlab-runner/production.sh
+    - echo "export DB_USERNAME=${DB_USERNAME}" > /home/gitlab-runner/production/.env
+    - echo "export DB_PASSWORD=${DB_PASSWORD}" >> /home/gitlab-runner/production/.env
+    - echo "export EMAIL_USERNAME=${EMAIL_USERNAME}" >> /home/gitlab-runner/production/.env
+    - echo "export EMAIL_PASSWORD=\"${EMAIL_PASSWORD}\"" >> /home/gitlab-runner/production/.env
+    - echo "export MAPBOX_KEY=${MAPBOX_KEY}" >> /home/gitlab-runner/production/.env
+    - echo "export IPAPI_KEY=${IPAPI_KEY}" >> /home/gitlab-runner/production/.env
+    - echo "export PERSPECTIVE_API_KEY=${PERSPECTIVE_API_KEY}" >> /home/gitlab-runner/production/.env
+    - bash /home/gitlab-runner/uploads/scenes/chunker.sh
+    - sudo systemctl restart production
+  artifacts:
+    paths:
+      - build/libs
+  only:
+    - tags
+  dependencies:
+    - npm-install

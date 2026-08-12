@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en-GB" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta context="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+  <th:block th:insert="~{fragments/head :: head(
+      'Weekly Competition | Your Space',
+      'Weekly Competition',
+      'renovation')}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div th:if="${currentUserEntry != null}">
+  <input id="currentUserEntryId" th:value="${currentUserEntry.getId()}" type="hidden"/>
+</div>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+
+<!--  Toasts  -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div aria-atomic="true" aria-live="assertive" class="toast bg-success-subtle" id="success-message"
+       role="alert">
+    <div class="toast-header">
+      <strong class="me-auto">Success</strong>
+      <button aria-label="Close" class="btn-close" data-bs-dismiss="toast" type="button"></button>
+    </div>
+    <div class="toast-body"></div>
+  </div>
+</div>
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div aria-atomic="true" aria-live="assertive" class="toast bg-danger-subtle" id="fail-message"
+       role="alert">
+    <div class="toast-header">
+      <strong class="me-auto">Error</strong>
+      <button aria-label="Close" class="btn-close" data-bs-dismiss="toast" type="button"></button>
+    </div>
+    <div class="toast-body"></div>
+  </div>
+</div>
+
+<!--        Submit Design Modal   -->
+<div class="modal fade" id="submitModal" tabindex="-1"
+     th:if="${currentUserEntry != null && !previousCompetition}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Submit Design</h5>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                type="button"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you want to submit
+          <span class="fw-bold text-nowrap" th:text="${currentUserEntry.getName()}">beautiful</span>
+          to
+          <span class="fw-bold text-nowrap" th:text="${competition.getTheme()}"></span>?
+        </p>
+        <p class="text-danger">
+          Warning: You cannot edit this entry once you click submit.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel
+        </button>
+        <button class="btn btn-primary" data-bs-dismiss="modal" id="confirm-submit-entry-button"
+                type="button">Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create or Import Modal -->
+<div aria-hidden="true" aria-labelledby="createImportModalLabel" class="modal fade"
+     id="createImportModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="createImportModalLabel">Create or Import Design</h1>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row justify-content-center align-items-center">
+          <div class="col-5">
+            <form method="post" th:action="@{createCompetitionEntry}">
+              <button class="border rounded text-center bg-white position-relative hover-animate"
+                      data-bs-dismiss="modal"
+                      style="aspect-ratio: 1 / 1; width: 100%; height: auto; display: flex; justify-content: center; align-items: center; overflow: hidden;"
+                      type="submit">
+                <div class="position-relative text-center">
+                  <svg class="bi bi-plus-lg" fill="currentColor" height="32" viewBox="0 0 16 16"
+                       width="32" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+                        fill-rule="evenodd"/>
+                  </svg>
+                  <p class="mt-2 mb-0 text-wrap text-break w-100">Create New Design</p>
+                </div>
+              </button>
+            </form>
+          </div>
+
+          <div class="col-1 text-center">
+            <p class="mb-0">or</p>
+          </div>
+
+          <div class="col-5">
+            <a class="btn border rounded text-center bg-white position-relative hover-animate"
+               style="aspect-ratio: 1 / 1; width: 100%; height: auto; display: flex; justify-content: center; align-items: center; overflow: hidden;"
+               th:href="@{/importDesign}">
+              <div class="position-relative text-center">
+                <svg class="bi bi-arrow-up-square" fill="currentColor" height="32"
+                     viewBox="0 0 16 16"
+                     width="32" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                      d="M15 2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2zm8.5 9.5a.5.5 0 0 1-1 0V5.707L5.354 7.854a.5.5 0 1 1-.708-.708l3-3a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 5.707z"
+                      fill-rule="evenodd"/>
+                </svg>
+                <p class="mt-2 mb-0 text-wrap text-break w-100">Import Existing Design</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-12">
+      <div class="position-relative mt-3 mb-3">
+        <div class="d-flex flex-row justify-content-between align-items-center mt-3 mb-3">
+          <button class="btn btn-secondary d-flex align-items-center gap-2" onclick="window.history.back()">
+            <svg class="bi bi-arrow-left" fill="currentColor" height="16" viewBox="0 0 16 16"
+                 width="16" xmlns="http://www.w3.org/2000/svg">
+              <path
+                  d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"
+                  fill-rule="evenodd"/>
+            </svg>
+            Back
+          </button>
+          <h1 class="m-0 text-center flex-grow-1" th:text="${competition.theme}"></h1>
+          <div style="width: 75px;"></div> <!-- optional spacer to balance right side -->
+        </div>
+        <p class="mb-0 text-center"
+           th:text="${#temporals.format(competition.startDate, 'dd/MM/yyyy') + ' 00:00 - ' + #temporals.format(competition.endDate, 'dd/MM/yyyy') + ' 23:59'}"></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container d-flex flex-column gap-3 mb-4 pb-4">
+  <!-- Your Entry & Top Entries -->
+  <div class="d-flex flex-lg-row flex-column justify-content-center gap-3">
+    <!-- Your Entry -->
+    <div class="d-flex flex-column shadow-sm rounded-2 bg-white p-3">
+      <div
+          class="d-flex flex-row w-100 h-auto justify-content-between align-items-center gap-3 mb-2">
+        <h3 class="text-nowrap m-0">Your Entry</h3>
+        <button class="btn btn-primary"
+                data-bs-target="#submitModal" data-bs-toggle="modal" id="submit-design-button"
+                th:if="${!previousCompetition && currentUserEntry != null && !currentUserEntry.isSubmitted()}">
+          Submit
+        </button>
+
+        <!--          Submitted message   -->
+        <div class="d-flex flex-row gap-1" id="submitted-message"
+             th:classappend="${currentUserEntry == null || !currentUserEntry.isSubmitted()} ? 'd-none' : ''">
+          <p class="text-success m-0 d-none d-sm-block">Submitted</p>
+          <?xml version="1.0" encoding="utf-8"?>
+          <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+          <svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24"
+               xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                stroke="#198754" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="1.5"/>
+            <path d="M7.75 12L10.58 14.83L16.25 9.17004" stroke="#198754" stroke-linecap="round"
+                  stroke-linejoin="round" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <!--          UnSubmitted message   -->
+        <div
+            class="d-flex flex-row gap-1"
+            id="unsubmitted-message"
+            th:if="${previousCompetition && currentUserEntry != null && !currentUserEntry.isSubmitted()}">
+          <p class="text-danger m-0 d-none d-sm-block text-nowrap">Not Submitted</p>
+          <?xml version="1.0" encoding="utf-8"?>
+          <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+          <?xml version="1.0" encoding="utf-8"?>
+          <svg fill="none" height="24" viewBox="0 0 24 24" width="24"
+               xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M16 8L8 16M8.00001 8L16 16M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+                stroke="#dc3545" stroke-linecap="round" stroke-linejoin="round"
+                stroke-width="1.5"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <button
+          class="hover-large-button h-100 border rounded text-center position-relative mt-2 hover-animate"
+          data-bs-target="#createImportModal" data-bs-toggle="modal"
+          th:if="${!previousCompetition && currentUserEntry == null}"
+          type="button"
+      >
+        <div class="position-relative text-center my-5">
+          <svg class="bi bi-plus-lg" fill="currentColor" height="50" viewBox="0 0 16 16"
+               width="50" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+                fill-rule="evenodd"/>
+          </svg>
+          <p class="mt-2 mb-0 text-wrap text-break w-100">Create Entry</p>
+        </div>
+      </button>
+
+      <!--        No entry created for past competition placeholder card  -->
+      <div
+          class="hover-large-button h-100 border rounded text-center position-relative mt-2 bg-secondary-subtle"
+          th:if="${previousCompetition && currentUserEntry == null}"
+      >
+        <div class="position-relative text-center my-5">
+          <?xml version="1.0" encoding="utf-8"?>
+          <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+          <svg fill="currentColor" height="50" viewBox="0 -0.5 25 25" width="50"
+               xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M6.96967 16.4697C6.67678 16.7626 6.67678 17.2374 6.96967 17.5303C7.26256 17.8232 7.73744 17.8232 8.03033 17.5303L6.96967 16.4697ZM13.0303 12.5303C13.3232 12.2374 13.3232 11.7626 13.0303 11.4697C12.7374 11.1768 12.2626 11.1768 11.9697 11.4697L13.0303 12.5303ZM11.9697 11.4697C11.6768 11.7626 11.6768 12.2374 11.9697 12.5303C12.2626 12.8232 12.7374 12.8232 13.0303 12.5303L11.9697 11.4697ZM18.0303 7.53033C18.3232 7.23744 18.3232 6.76256 18.0303 6.46967C17.7374 6.17678 17.2626 6.17678 16.9697 6.46967L18.0303 7.53033ZM13.0303 11.4697C12.7374 11.1768 12.2626 11.1768 11.9697 11.4697C11.6768 11.7626 11.6768 12.2374 11.9697 12.5303L13.0303 11.4697ZM16.9697 17.5303C17.2626 17.8232 17.7374 17.8232 18.0303 17.5303C18.3232 17.2374 18.3232 16.7626 18.0303 16.4697L16.9697 17.5303ZM11.9697 12.5303C12.2626 12.8232 12.7374 12.8232 13.0303 12.5303C13.3232 12.2374 13.3232 11.7626 13.0303 11.4697L11.9697 12.5303ZM8.03033 6.46967C7.73744 6.17678 7.26256 6.17678 6.96967 6.46967C6.67678 6.76256 6.67678 7.23744 6.96967 7.53033L8.03033 6.46967ZM8.03033 17.5303L13.0303 12.5303L11.9697 11.4697L6.96967 16.4697L8.03033 17.5303ZM13.0303 12.5303L18.0303 7.53033L16.9697 6.46967L11.9697 11.4697L13.0303 12.5303ZM11.9697 12.5303L16.9697 17.5303L18.0303 16.4697L13.0303 11.4697L11.9697 12.5303ZM13.0303 11.4697L8.03033 6.46967L6.96967 7.53033L11.9697 12.5303L13.0303 11.4697Z"
+                fill="#000000"/>
+          </svg>
+          <p class="mt-2 mb-0 text-wrap text-break w-100">Not entered</p>
+        </div>
+      </div>
+
+      <div class="competition-grid overflow-competition-grid mt-2"
+           th:if="${currentUserEntry != null}">
+        <div
+            th:replace="~{competitions/competitionEntryPreview :: competitionEntryPreview(${currentUserEntry}, 0, ${votedDesigns})}"></div>
+      </div>
+    </div>
+
+    <!-- Top Entries -->
+    <div class="shadow-sm rounded-2 bg-white p-3">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <h3 class="m-0">Top Entries</h3>
+      </div>
+      <div class="competition-grid overflow-competition-grid mt-2 w-100">
+        <div th:replace="${firstPlace != null} ?
+       ~{competitions/competitionEntryPreview :: competitionEntryPreview(${firstPlace}, '1', ${votedDesigns})} :
+       ~{competitions/noEntryPreview :: noEntryPreview('No First Place')}">
+        </div>
+
+        <div th:replace="${secondPlace != null} ?
+       ~{competitions/competitionEntryPreview :: competitionEntryPreview(${secondPlace}, '2', ${votedDesigns})} :
+       ~{competitions/noEntryPreview :: noEntryPreview('No Second Place')}">
+        </div>
+
+        <div th:replace="${thirdPlace != null} ?
+       ~{competitions/competitionEntryPreview :: competitionEntryPreview(${thirdPlace}, '3', ${votedDesigns})} :
+       ~{competitions/noEntryPreview :: noEntryPreview('No Third Place')}">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submitted Entries -->
+  <div class="row align-content-center">
+    <hr>
+    <div
+        class="d-flex flex-column flex-md-row align-items-md-center align-items-start justify-content-md-between">
+      <div class="bg-white p-3 rounded-2 p-3 shadow-sm">
+        <p class="my-0"
+           th:text="'Total Entries: ' + ${submittedEntriesCount}"> Total Entries:
+          0</p>
+      </div>
+      <div
+          class="d-flex justify-content-start bg-white p-3 rounded-2 p-3 shadow-sm justify-content-md-end align-items-center mt-2 mt-md-0">
+        <label class="mb-0 me-2" for="sortByDropdown">Sort by</label>
+        <select class="form-select w-auto"
+                id="sortByDropdown"
+                th:classappend="${submittedEntriesCount == 0} ? 'text-muted' : ''"
+                th:disabled="${submittedEntriesCount == 0}">
+          <option selected value="VOTES_DESC">Most Votes</option>
+          <option value="VOTES_ASC">Least Votes</option>
+          <option value="NAME_ASC">Alphabetical (A-Z)</option>
+          <option value="NAME_DESC">Alphabetical (Z-A)</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-12 px-0 mx-0">
+      <hr/>
+    </div>
+
+    <div class="bg-white rounded-2 shadow-sm">
+      <div id="paginationContent"
+           th:data-url="@{/competitionDetails/{competitionId}/paged(competitionId=${competition.id})}">
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/submitDesignEntry.js}"></script>
+
+<script th:inline="javascript">
+    window.onload = function () {
+        const baseContentURL = document.getElementById("paginationContent").dataset.url;
+        initPagination(baseContentURL, 4, 8, 8);
+    };
+    document.addEventListener("DOMContentLoaded", function () {
+        const entering = /*[[${param.entering}]]*/ null;
+        const currentDesignId = document.getElementById('currentUserEntryId');
+        console.log(currentDesignId);
+        if (!currentDesignId && entering && entering[0] === 'true') {
+            const modalElement = document.getElementById('createImportModal');
+            if (modalElement && typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
+        }
+    });
+
+</script>
+<script th:src="@{/js/updateVotes.js}"></script>
+<script th:src="@{/js/paginationScript.js}"></script>
+<script th:src="@{/js/competitionDetails.js}"></script>
+
+</body>
+</html>

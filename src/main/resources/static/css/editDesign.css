@@ -1,0 +1,110 @@
+.canvas-container {
+  height: 75vh;
+  position: relative;
+}
+
+#overlay-controls {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  background: #2c2c2c;
+  color: white;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  opacity: 95%;
+  transition: width 0.3s ease;
+  max-width: 100%;
+}
+
+#overlay-controls .nav {
+  width: 150px;
+  border-right: 1px solid #444;
+}
+
+#overlay-controls .nav-link {
+  color: #ccc;
+  border-radius: 0;
+  text-align: left;
+  padding: 12px 16px;
+}
+
+#overlay-controls .nav-link.active {
+  background-color: #444;
+  color: #fff;
+}
+
+.close-button-wrapper {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+#overlay-controls .tab-content {
+  background-color: #333;
+  color: #fff;
+  scroll-behavior: smooth;
+  transition: width 0.3s ease, opacity 0.3s ease;
+  max-width: 450px;
+}
+
+@media (max-width: 991px) {
+  #overlay-controls .tab-content {
+    max-width: 210px;
+  }
+}
+
+@media (max-width: 575px) {
+  #overlay-controls .tab-content {
+    max-width: 100%;
+  }
+}
+
+#overlay-controls.collapsed .tab-content {
+  max-width: 0;
+  opacity: 0;
+  padding: 0;
+  overflow: hidden;
+  display: none;
+}
+
+.tab-pane {
+  padding-top: 20px;
+}
+
+.model-images {
+  width: 100%; /* Prevents distortion */
+  aspect-ratio: 1 / 1;
+}
+
+.hover-animate-model:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.delete-model-button {
+  z-index: 100;
+  opacity: 50%;
+}
+
+.delete-model-button:hover {
+  opacity: 100%;
+}
+
+.add-model-btn {
+  transition: transform 0.04s ease;
+}
+
+.add-model-btn:active {
+  transform: scale(0.95);
+}

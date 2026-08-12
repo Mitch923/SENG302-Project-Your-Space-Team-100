@@ -1,0 +1,74 @@
+<div th:fragment="designPreview(renovationDesign, owned, page)">
+  <!-- When page == importDesign, wrap the whole card in <a> -->
+  <a class="text-decoration-none text-black"
+     data-bs-target="#confirmImportModal"
+     data-bs-toggle="modal"
+     onclick="updateImportedDesignId(this)"
+     style="cursor: pointer;"
+     tabindex="0"
+     th:attr="data-id=${renovationDesign.id}, data-name=${renovationDesign.name}"
+     th:if="${page == 'importDesign'}">
+    <div class="card hover-animate design-card-body">
+      <input id="designId" th:value="${renovationDesign.getId()}" type="hidden">
+      <div class="position-relative">
+        <img alt="..." class="card-img-top img-fluid"
+             style="object-fit: cover; object-position: center 50%; aspect-ratio: 16/9;"
+             th:alt="${renovationDesign.getThumbnailFileName()}"
+             th:attr="onerror=|this.onerror = null; this.src=@{/img/defaultDesignPreview.jpeg}|"
+             th:if="${renovationDesign.getThumbnailFileName() != null}"
+             th:src="@{uploads/designPreviewImages/{fileName}(fileName=${renovationDesign.getThumbnailFileName()})}"/>
+        <img alt="..." class="card-img-top img-fluid"
+             style="object-fit: cover; object-position: center 50%; aspect-ratio: 16/9;"
+             th:src="@{img/defaultDesignPreview.jpeg}"
+             th:unless="${renovationDesign.getThumbnailFileName() != null}"/>
+        <div
+            class="position-absolute top-0 start-0 m-2 d-flex justify-content-center align-items-center"
+            th:if="${renovationDesign != null and renovationDesign.relatedRoom != null}">
+          <span class="badge bg-primary"
+                th:text="${renovationDesign.relatedRoom.name}"></span>
+        </div>
+      </div>
+      <div class="card-body">
+        <h5 class="card-title truncate-lines-3" th:text="${renovationDesign.name}"></h5>
+        <p class="card-text truncate-lines-3" th:text="${renovationDesign.description}"></p>
+      </div>
+    </div>
+  </a>
+
+  <!-- When page != importDesign, keep original structure -->
+  <div class="card hover-animate design-card-body" style="width: 16rem;"
+       th:unless="${page == 'importDesign'}">
+    <input id="designId" th:value="${renovationDesign.getId()}" type="hidden">
+    <div class="position-relative">
+      <img alt="..." class="card-img-top img-fluid"
+           style="object-fit: cover; object-position: center 50%; aspect-ratio: 16/9;"
+           th:alt="${renovationDesign.getThumbnailFileName()}"
+           th:attr="onerror=|this.onerror = null; this.src=@{/img/defaultDesignPreview.jpeg}|"
+           th:if="${renovationDesign.getThumbnailFileName() != null}"
+           th:src="@{uploads/designPreviewImages/{fileName}(fileName=${renovationDesign.getThumbnailFileName()})}"/>
+      <img alt="..." class="card-img-top img-fluid"
+           style="object-fit: cover; object-position: center 50%; aspect-ratio: 16/9;"
+           th:src="@{img/defaultDesignPreview.jpeg}"
+           th:unless="${renovationDesign.getThumbnailFileName() != null}"/>
+      <div
+          class="position-absolute top-0 start-0 m-2 d-flex justify-content-center align-items-center"
+          th:if="${renovationDesign != null and renovationDesign.relatedRoom != null}">
+        <span class="badge bg-primary"
+              th:text="${renovationDesign.relatedRoom.name}"></span>
+      </div>
+      <div
+          class="fs-4 position-absolute top-0 end-0 m-2 bg-opacity-75 bg-white border-black border-1 rounded-circle d-flex justify-content-center align-items-center"
+          style="width: 3rem; height: 3rem;">
+        <div
+            th:replace="~{fragments/iconSelectorFragment :: iconSelector(${renovationDesign}, ${owned})}"></div>
+      </div>
+    </div>
+    <a class="text-decoration-none text-black"
+       th:href="@{renovationRecord/{renovationId}/editDesign/{designId}(designId=${renovationDesign.id}, renovationId=${renovationDesign.renovationRecord.id})}">
+      <div class="card-body">
+        <h5 class="card-title truncate-lines-3" th:text="${renovationDesign.name}"></h5>
+        <p class="card-text truncate-lines-3" th:text="${renovationDesign.description}"></p>
+      </div>
+    </a>
+  </div>
+</div>

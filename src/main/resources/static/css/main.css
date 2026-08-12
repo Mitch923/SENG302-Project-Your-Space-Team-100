@@ -1,0 +1,119 @@
+:root {
+  --valid-green: #198754;
+  --invalid-red: #dc3545;
+  --inactive-grey: #888888;
+}
+
+.location-select {
+  display: flex;
+  gap: 1rem;
+}
+
+.location-select h6, .location-select p {
+  margin: 0;
+  text-align: left;
+  transition-duration: 200ms;
+}
+
+.location-select svg {
+  width: 1.25rem;
+  transition-duration: 200ms;
+}
+
+.location-inactive {
+  color: var(--inactive-grey);
+}
+
+.location-inactive svg {
+  fill: var(--inactive-grey);
+}
+
+.location-valid {
+  color: var(--valid-green);
+}
+
+.location-valid svg {
+  fill: var(--valid-green);
+}
+
+.location-invalid {
+  color: var(--invalid-red);
+}
+
+.location-invalid svg {
+  fill: var(--invalid-red);
+}
+
+.location-select:hover svg {
+  fill: white;
+}
+
+.location-select:hover {
+  color: white;
+}
+
+.location-autocomplete svg {
+  width: 0.75rem;
+}
+
+.location-invalid.list-group-item, button.location-invalid {
+  border-color: var(--invalid-red);
+}
+
+.location-valid.list-group-item, button.location-valid {
+  border-color: var(--valid-green);
+}
+
+.location-autocomplete .list-group-item {
+  transition-duration: 200ms;
+}
+
+.location-autocomplete .scroll-shadows .list-group-item:hover {
+  color: dodgerblue;
+  cursor: pointer;
+}
+
+/* https://css-tricks.com/books/greatest-css-tricks/scroll-shadows/ */
+.scroll-shadows {
+  height: 6rem;
+  overflow: auto;
+
+  background: /* Shadow Cover TOP */ linear-gradient(
+      white 30%,
+      rgba(255, 255, 255, 0)
+  ) center top,
+    /* Shadow Cover BOTTOM */ linear-gradient(
+      rgba(255, 255, 255, 0),
+      white 70%
+  ) center bottom,
+    /* Shadow TOP */ radial-gradient(
+      farthest-side at 50% 0,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+  ) center top,
+    /* Shadow BOTTOM */ radial-gradient(
+      farthest-side at 50% 100%,
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0)
+  ) center bottom;
+
+  background-repeat: no-repeat;
+  background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+  background-attachment: local, local, scroll, scroll;
+}
+
+#colour-picker-container svg {
+  width: 28px;
+  height: 28px;
+}
+
+.fakeInput input:focus {
+  outline: none;
+}
+
+@media (max-width: 570px) {
+  #colour-picker-container svg {
+    width: 38px;
+    height: 38px;
+  }
+}

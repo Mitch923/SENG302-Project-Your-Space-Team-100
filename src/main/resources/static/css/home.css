@@ -1,0 +1,69 @@
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: #f6f6f6;
+}
+
+.container {
+  flex: 1;
+}
+
+.card-body p {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bg-white {
+  background-color: #ffffff;
+}
+
+.competition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.overflow-competition-grid {
+  grid-auto-flow: column;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 10px;
+}
+
+.design-preview-image {
+  object-fit: cover;
+  object-position: center 50%;
+  aspect-ratio: 16/9;
+}
+
+.hover-large-button {
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  min-width: 250px;
+  margin: 10px;
+}
+
+@media (max-width: 576px) {
+  .hover-large-button {
+    min-width: 120px; /* smaller min-width for small screens */
+  }
+}
+
+button.hover-large-button:hover {
+  background-color: whitesmoke;
+}
+
+a.hover-large-button:hover {
+  background-color: whitesmoke;
+}

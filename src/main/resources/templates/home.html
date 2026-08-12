@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <th:block th:insert="~{fragments/head :: head(
+      'Home | Your Space',
+      'Your Space Home Page',
+      'Home page')}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/home.css}">
+</head>
+<body>
+<div th:if="${currentUserEntry != null}">
+  <input id="currentUserEntryId" th:value="${currentUserEntry.getId()}" type="hidden"/>
+</div>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+
+<!--  Toasts  -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div aria-atomic="true" aria-live="assertive" class="toast bg-success-subtle" id="success-message"
+       role="alert">
+    <div class="toast-header">
+      <strong class="me-auto">Success</strong>
+      <button aria-label="Close" class="btn-close" data-bs-dismiss="toast" type="button"></button>
+    </div>
+    <div class="toast-body"></div>
+  </div>
+</div>
+<div class="toast-container position-fixed top-0 end-0 p-3">
+  <div aria-atomic="true" aria-live="assertive" class="toast bg-danger-subtle" id="fail-message"
+       role="alert">
+    <div class="toast-header">
+      <strong class="me-auto">Error</strong>
+      <button aria-label="Close" class="btn-close" data-bs-dismiss="toast" type="button"></button>
+    </div>
+    <div class="toast-body"></div>
+  </div>
+</div>
+
+<!--        Submit Design Modal   -->
+<div class="modal fade" id="submitModal" tabindex="-1" th:if="${currentUserEntry != null}">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Submit Design</h5>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                type="button"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you want to submit
+          <span class="fw-bold text-nowrap" th:text="${currentUserEntry.getName()}">beautiful</span>
+          to
+          <span class="fw-bold text-nowrap" th:text="${weeklyCompetition.getTheme()}"></span>?
+        </p>
+        <p class="text-danger">
+          Warning: You cannot edit this entry once you click submit.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel
+        </button>
+        <button class="btn btn-primary" data-bs-dismiss="modal" id="confirm-submit-entry-button"
+                type="button">Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container my-4 d-flex flex-column gap-3">
+  <!-- Current Competition -->
+  <div class="d-flex flex-lg-row flex-column justify-content-center gap-3">
+
+    <!-- Your Entry -->
+    <div class="shadow-sm rounded-2 bg-white p-3">
+      <div class="d-flex flex-column h-100 mb-2 mb-lg-0">
+        <div class="d-flex flex-row justify-content-between align-items-center w-100 mb-2 gap-2">
+          <h2 class="text-nowrap m-0">Your Entry</h2>
+          <button class="btn btn-primary"
+                  data-bs-target="#submitModal" data-bs-toggle="modal" id="submit-design-button"
+                  th:if="${currentUserEntry != null && !currentUserEntry.isSubmitted()}">
+            Submit
+          </button>
+          <!--          Submitted message   -->
+          <div class="d-flex flex-row gap-1" id="submitted-message"
+               th:classappend="${currentUserEntry == null || !currentUserEntry.isSubmitted()} ? 'd-none' : ''">
+            <p class="text-success m-0 d-none d-sm-block">Submitted</p>
+            <?xml version="1.0" encoding="utf-8"?>
+            <!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+            <svg fill="#FFFFFF" height="24" viewBox="0 0 24 24" width="24"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path
+                  d="M12 22C17.5 22 22 17.5 22 12C22 6.5 17.5 2 12 2C6.5 2 2 6.5 2 12C2 17.5 6.5 22 12 22Z"
+                  stroke="#198754" stroke-linecap="round" stroke-linejoin="round"
+                  stroke-width="1.5"/>
+              <path d="M7.75 12L10.58 14.83L16.25 9.17004" stroke="#198754" stroke-linecap="round"
+                    stroke-linejoin="round" stroke-width="1.5"/>
+            </svg>
+          </div>
+
+        </div>
+        <a class="btn hover-large-button border rounded text-center h-100 mt-2 hover-animate"
+           th:href="@{/competitionDetails/{id}(id=${weeklyCompetition.id}, entering=${true})}"
+           th:if="${currentUserEntry == null}"
+           type="button"
+        >
+          <div class="position-relative text-center my-5">
+            <svg class="bi bi-plus-lg" fill="currentColor" height="50" viewBox="0 0 16 16"
+                 width="50" xmlns="http://www.w3.org/2000/svg">
+              <path
+                  d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+                  fill-rule="evenodd"/>
+            </svg>
+            <p class="mt-2 mb-0 text-wrap text-break w-100">Enter Now</p>
+          </div>
+        </a>
+        <div class="competition-grid overflow-competition-grid mt-2"
+             th:if="${currentUserEntry != null}">
+          <div
+              th:replace="~{competitions/competitionEntryPreview :: competitionEntryPreview(${currentUserEntry}, 0, ${votedDesigns})}"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Entries -->
+    <div class="shadow-sm rounded-2 bg-white p-3">
+      <div
+          class="d-flex flex-column h-100 justify-content-between align-items-start mb-2 mb-lg-0">
+        <div
+            class="d-flex flex-row justify-content-between align-items-center w-100">
+          <!-- Theme -->
+          <h3 class="m-0">
+            <span class="text-muted fs-6 me-1">This Week's Theme:</span>
+            <span class="text-dark fs-2"
+                  th:text="${weeklyCompetition.theme}">Rowdy Conference Room</span>
+          </h3>
+
+          <!-- View All Button -->
+          <a class="btn btn-primary text-nowrap"
+             th:href="@{/competitionDetails/{id}(id=${weeklyCompetition.id})}">
+            View All
+          </a>
+        </div>
+        <div class="competition-grid overflow-competition-grid mt-2 w-100">
+          <div th:replace="${currentFirst != null} ?
+       ~{competitions/competitionEntryPreview :: competitionEntryPreview(${currentFirst}, '1', ${votedDesigns})} :
+       ~{competitions/noEntryPreview :: noEntryPreview('No First Place')}">
+          </div>
+
+          <div th:replace="${currentSecond != null} ?
+       ~{competitions/competitionEntryPreview :: competitionEntryPreview(${currentSecond}, '2', ${votedDesigns})} :
+       ~{competitions/noEntryPreview :: noEntryPreview('No Second Place')}">
+          </div>
+
+          <div th:replace="${currentThird != null} ?
+       ~{competitions/competitionEntryPreview :: competitionEntryPreview(${currentThird}, '3', ${votedDesigns})} :
+       ~{competitions/noEntryPreview :: noEntryPreview('No Third Place')}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Previous Competitions -->
+  <div class="shadow-sm rounded-2 bg-white p-3">
+    <h2 class="mb-2">Previous Competitions</h2>
+    <div id="paginationContent"
+         th:data-url="@{/previous-competitions/paged}">
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/updateVotes.js}"></script>
+<script th:src="@{/js/submitDesignEntry.js}"></script>
+<script th:inline="javascript">
+    window.onload = function () {
+        const baseContentURL = document.getElementById("paginationContent").dataset.url;
+        initPagination(baseContentURL, 2, 4, 4);
+    };
+</script>
+<script th:src="@{/js/paginationScript.js}"></script>
+</body>
+</html>

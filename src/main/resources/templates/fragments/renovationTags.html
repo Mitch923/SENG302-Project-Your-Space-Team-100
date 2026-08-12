@@ -1,0 +1,10 @@
+<div th:fragment="renovationTags(tags)">
+  <div class="col-auto mb-1">
+    <span class="badge bg-success me-1 d-inline-flex align-items-center"
+          th:each="tag : ${tags}">
+      <span th:text="${tag.name}"></span>
+      <a class="ms-2 text-white text-decoration-none" style="font-weight: bold; line-height: 1;"
+         th:href="@{/remove-tag/record.id}">×</a>
+    </span>
+  </div>
+</div>

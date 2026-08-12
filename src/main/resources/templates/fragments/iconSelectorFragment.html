@@ -1,0 +1,43 @@
+<div th:fragment="iconSelector(renovationDesign, owned)">
+  <!-- Task Icon Selector -->
+  <div class="dropdown">
+    <a aria-expanded="false"
+       aria-haspopup="true"
+       class="btn btn-secondary dropdown-anim-icon"
+       data-bs-toggle="dropdown"
+       role="button"
+       th:attr="style=${owned} ? 'background-color: transparent; border: none !important; color: #333333;' : 'background-color: transparent; border: none !important; color: #aaa; pointer-events: none; cursor: default;'"
+       th:classappend="${!owned} ? ' disabled-link' : ''"
+       type="button">
+      <div class="selected-item icon"
+           th:attr="id='selectedIcon-' + ${renovationDesign.getId()}">
+        <div
+            th:if="${owned}"
+            th:replace="~{fragments/designIcons :: icon(${#strings.defaultString(renovationDesign.getIconName(), 'plus')})}"></div>
+      </div>
+    </a>
+
+    <div class="dropdown-menu">
+      <div class="d-flex flex-nowrap justify-content-center gap-2 p-2 h-100">
+        <a class="dropdown-item design-icon flex-column align-items-center justify-content-center remove-icon-button"
+           href="#"
+           id="plus"
+           th:classappend="${#strings.defaultString(renovationDesign.getIconName(), 'plus') == 'plus'} ? 'force-hidden' : 'd-flex'">
+          <span class="text-danger">Remove Icon</span>
+        </a>
+        <a class="dropdown-item design-icon" href="#" id="buildingCheck">
+          <div th:replace="~{fragments/designIcons :: icon(buildingCheck)}"></div>
+        </a>
+        <a class="dropdown-item design-icon" href="#" id="buildingGear">
+          <div th:replace="~{fragments/designIcons :: icon(buildingGear)}"></div>
+        </a>
+        <a class="dropdown-item design-icon" href="#" id="buildingExclamation">
+          <div th:replace="~{fragments/designIcons :: icon(buildingExclamation)}"></div>
+        </a>
+        <a class="dropdown-item design-icon" href="#" id="buildingX">
+          <div th:replace="~{fragments/designIcons :: icon(buildingX)}"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

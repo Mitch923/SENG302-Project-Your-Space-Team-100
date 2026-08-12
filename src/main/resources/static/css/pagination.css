@@ -1,0 +1,38 @@
+/* Extra Small (XS) - 575px and below */
+@media (min-width: 0px) {
+  /* Styles for extra-small screens */
+  #pageNumber {
+    max-width: 50vw;
+  }
+}
+
+/* Small (SM) - 576px and up */
+@media (min-width: 576px) {
+  /* Styles for small screens */
+
+}
+
+/* Medium (MD) - 768px and up */
+@media (min-width: 768px) {
+  /* Styles for tablets and medium screens */
+  #pageNumber {
+    max-width: 25vw;
+  }
+}
+
+/* Large (LG) - 992px and up */
+@media (min-width: 992px) {
+  /* Styles for desktops and large screens */
+
+}
+
+/* Extra Large (XL) - 1200px and up */
+@media (min-width: 1200px) {
+  /* Styles for larger desktops */
+
+}
+
+/* Extra Extra Large (XXL) - 1400px and up */
+@media (min-width: 1400px) {
+  /* Styles for ultra-wide screens */
+}

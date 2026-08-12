@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <th:block th:insert="~{fragments/head :: head(
+      'My Profile | Your Space',
+      'My profile',
+      'profile')}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/profile/profile.css}">
+</head>
+<body>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+<div class="d-flex flex-column align-items-center" id="content">
+  <h1 class="text-center mt-5">My Profile</h1>
+  <div
+      class="shadow-sm bg-white mt-5 d-flex flex-column margin-auto p-lg-5 p-md-4 p-2 py-4 rounded-2"
+      id="user-details">
+    <a class="btn btn-sm px-4 btn-primary" id="edit-btn" th:href="@{/profile/edit}">Edit</a>
+    <div
+        class="d-flex flex-column flex-md-row align-items-center justify-content-md-around my-md-4 my-lg-0"
+        id="pfp-name-email">
+      <div id="pfp">
+        <!-- User profile picture -->
+        <img alt="My Profile Picture"
+             class="profile-image circular-image"
+             th:if="${user.profileImagePath != null}" th:src="@{${profileImagePath}}"/>
+        <img alt="My Profile Picture"
+             class="profile-image circular-image"
+             th:src="@{img/user_profile_images/Default_pfp.svg}"
+             th:unless="${user.profileImagePath != null}"/>
+      </div>
+      <div class="d-flex flex-column align-items-center align-items-md-start mt-3"
+           id="name-email-joined">
+        <div id="name">
+          <h1 th:text="${user.fullName}">FirstName LastName</h1>
+        </div>
+        <div class="d-flex align-items-center">
+          <img alt="location icon" style="height: 0.8rem;" th:if="${locationFullAddress}"
+               th:src="@{/img/icons/geo-alt.svg}"/>
+          <p class="m-2" th:text="${locationFullAddress} ? ${locationFullAddress} : ''"></p>
+        </div>
+        <div id="email">
+          <h4 th:text="${user.email}">email@example.co.nz</h4>
+        </div>
+        <div class="d-flex align-items-end justify-content-center gap-1" id="date-joined">
+          <h3 class="m-0">Date Joined:</h3>
+          <p class="m-0 fs-5" th:text="${user.createdDate}">01/01/2000</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

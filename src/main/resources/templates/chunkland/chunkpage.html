@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta name="_csrf" th:content="${_csrf.token}"/>
+  <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+  <title>File Chunker - Fixed Version</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 2px dashed #ddd;
+      border-radius: 5px;
+      background: #f9f9f9;
+    }
+
+    button {
+      background: #007bff;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover:not(:disabled) {
+      background: #0056b3;
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    .progress-container {
+      margin-top: 20px;
+      display: none;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #007bff, #0056b3);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 5px;
+      border-left: 4px solid #007bff;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📁 File Chunker</h1>
+
+  <!-- CSRF token for Spring Security -->
+  <meta content="${_csrf.token}" name="_csrf"/>
+  <meta content="${_csrf.headerName}" name="_csrf_header"/>
+
+  <div class="input-group">
+    <label for="glbFile">Select a file to chunk:</label>
+    <input accept=".glb,*" id="glbFile" type="file">
+  </div>
+
+  <button id="chunkBtn">Start Chunking</button>
+
+  <div class="progress-container" id="progressContainer">
+    <div class="status" id="statusText">Processing...</div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="status" id="progressText">0%</div>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<script>
+    const MAX_PACKET_SIZE = 10485760; // 10MB
+    const PACKET_INDEX_SIZE = 2;
+    const TOTAL_PACKETS_SIZE = 2;
+    const MAX_PAYLOAD_SIZE = MAX_PACKET_SIZE - PACKET_INDEX_SIZE - TOTAL_PACKETS_SIZE;
+
+    async function chunkIt(file) {
+        const totalPackets = Math.ceil(file.size / MAX_PAYLOAD_SIZE);
+        const uploadId = Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
+        // Show progress container
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const statusText = document.getElementById('statusText');
+        const chunkBtn = document.getElementById('chunkBtn');
+
+        progressContainer.style.display = 'block';
+        chunkBtn.disabled = true;
+
+        console.log(`Starting to chunk and upload file: ${file.name} (${file.size} bytes)`);
+        console.log(`Upload ID: ${uploadId}, Total packets: ${totalPackets}`);
+
+        let uploadedChunks = 0;
+
+        // Process and upload chunks sequentially
+        for (let currentPacket = 0; currentPacket < totalPackets; currentPacket++) {
+            const start = currentPacket * MAX_PAYLOAD_SIZE;
+            const end = Math.min(start + MAX_PAYLOAD_SIZE, file.size);
+            const blobSlice = file.slice(start, end);
+
+            // Read chunk
+            const chunk = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function (event) {
+                    resolve(new Uint8Array(event.target.result));
+                };
+                reader.onerror = reject;
+                reader.readAsArrayBuffer(blobSlice);
+            });
+
+            // Create header: 2-byte packetNumber + 2-byte totalPackets
+            const headerBuffer = new ArrayBuffer(PACKET_INDEX_SIZE + TOTAL_PACKETS_SIZE);
+            const headerView = new DataView(headerBuffer);
+            headerView.setUint16(0, currentPacket + 1);
+            headerView.setUint16(2, totalPackets);
+            const header = new Uint8Array(headerBuffer);
+
+            // Create packet = header + chunk
+            const packet = new Uint8Array(header.length + chunk.length);
+            packet.set(header, 0);
+            packet.set(chunk, header.length);
+
+            // Upload chunk to server
+            try {
+                statusText.textContent = `Uploading packet ${currentPacket
+                + 1} of ${totalPackets}...`;
+
+                const formData = new FormData();
+                formData.append('chunk', new Blob([packet]));
+                formData.append('uploadId', uploadId);
+                formData.append('fileName', file.name);
+                formData.append('chunkIndex', currentPacket + 1);
+                formData.append('totalChunks', totalPackets);
+                formData.append('fileSize', file.size);
+
+                // Get CSRF token
+                const token = document.querySelector('meta[name="_csrf"]')?.getAttribute('content');
+                const header = document.querySelector('meta[name="_csrf_header"]')?.getAttribute(
+                        'content');
+
+                const headers = {};
+                if (token && header) {
+                    headers[header] = token;
+                }
+
+                const response = await fetch('chunky', {
+                    method: 'POST',
+                    body: formData,
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log(`Chunk ${currentPacket + 1} uploaded:`, result);
+                uploadedChunks++;
+
+            } catch (error) {
+                console.error(`Failed to upload chunk ${currentPacket + 1}:`, error);
+                statusText.textContent = `❌ Upload failed at chunk ${currentPacket + 1}`;
+                chunkBtn.disabled = false;
+                throw error;
+            }
+
+            // Update progress
+            const progress = ((currentPacket + 1) / totalPackets) * 100;
+            progressFill.style.width = `${progress}%`;
+            progressText.textContent = `${Math.round(progress)}%`;
+
+            // Allow browser to update UI
+            await new Promise(resolve => setTimeout(resolve, 10));
+        }
+
+        // Upload complete
+        statusText.textContent = '✅ Upload completed!';
+        chunkBtn.disabled = false;
+
+        console.log(`All ${uploadedChunks} chunks uploaded successfully`);
+
+        // Show results
+        const results = document.getElementById('results');
+        results.innerHTML = `
+                <div class="results">
+                    <h3>✅ Upload Complete!</h3>
+                    <p><strong>File:</strong> ${file.name}</p>
+                    <p><strong>File Size:</strong> ${(file.size / (1024 * 1024)).toFixed(2)} MB</p>
+                    <p><strong>Upload ID:</strong> ${uploadId}</p>
+                    <p><strong>Chunks Uploaded:</strong> ${uploadedChunks}</p>
+                    <p><strong>Max Chunk Size:</strong> ${(MAX_PAYLOAD_SIZE / (1024
+                * 1024)).toFixed(2)} MB</p>
+                </div>
+            `;
+    }
+
+    const fileInput = document.getElementById("glbFile");
+    const chunkBtn = document.getElementById("chunkBtn");
+
+    chunkBtn.addEventListener("click", async function () {
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+
+            try {
+                await chunkIt(file);
+            } catch (error) {
+                console.error("Error chunking/uploading file:", error);
+                alert("Error processing file: " + error.message);
+
+                // Re-enable button and hide progress on error
+                chunkBtn.disabled = false;
+                document.getElementById('progressContainer').style.display = 'none';
+            }
+        } else {
+            alert("Please select a file first!");
+        }
+    });
+</script>
+</body>
+</html>

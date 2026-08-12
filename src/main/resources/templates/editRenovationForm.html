@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta context="text/html; charset=UTF-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>Edit New Renovation Record</title>
+  <link rel="stylesheet" th:href="@{/css/renovationForm.css}"/>
+  <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}"/>
+  <th:block th:insert="~{fragments/head :: head(
+      'Edit Renovation Record | Your Space',
+      'My Renovation Record',
+      'renovation')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+<div class="container mt-4">
+  <form id="renovationForm" method="post" th:action="@{/editRenovation/{id}(id=${id})}"
+        th:object="${renovation}">
+    <div class="card p-4 shadow-sm">
+      <h4 class="card-title mb-4">Edit Renovation Record</h4>
+      <div class="row">
+        <!-- Left column with vertical border -->
+        <div class="col-lg-6 pe-lg-4 border-end">
+          <div class="mb-3">
+            <label class="form-label" for="name">Name:</label>
+            <input autofocus class="form-control" data-cy="name" id="name"
+                   placeholder="Name"
+                   th:classappend="${errors != null && (errors.containsKey('name') || errors.containsKey('duplicate')) ? 'is-invalid' : ''}"
+                   th:field="*{name}"
+                   type="text">
+            <p class="text-danger"
+               th:if="${errors != null && errors.containsKey('name')}"
+               th:text="${errors.get('name')}"></p>
+            <p class="text-danger"
+               th:if="${errors != null && errors.containsKey('duplicate')}"
+               th:text="${errors.get('duplicate')}"></p>
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="description">Description:</label>
+            <textarea class="form-control" data-cy="description" id="description"
+                      placeholder="Description"
+                      rows="6"
+                      th:classappend="${errors != null and errors.containsKey('description') ? 'is-invalid' : ''}"
+                      th:name="description" th:text="*{description}"
+                      type="text">
+            </textarea>
+            <p><span id="charCount"
+                     th:text="${descriptionLength == null ? 0 : descriptionLength} + '/512'">0/512</span>
+            </p>
+            <p class="text-danger text-start"
+               th:if="${errors != null && errors.containsKey('description')}"
+               th:text="${errors.get('description')}"></p>
+          </div>
+          <div class="mb-3">
+            <div th:replace="~{fragments/locationFragment :: locationFragment(${false})}"></div>
+          </div>
+        </div>
+
+        <!-- Right column -->
+        <div class="col-lg-6 ps-lg-4">
+          <h5>Add Rooms</h5>
+          <div class="row">
+            <div class="col-lg-9">
+              <label class="form-label" for="roomName">Room Name:</label>
+              <input class="form-control" id="roomName"
+                     placeholder="Enter Room Name"
+                     th:classappend="${errors != null and errors.containsKey('rooms') ? 'is-invalid' : ''}"
+                     th:name="roomName" th:value="${roomName == null ? '' : roomName}"
+                     type="text">
+            </div>
+            <div class="col-lg-3 d-flex align-items-end">
+              <button class="btn btn-primary w-100" id="addRoomButton" type="button">Add Room
+              </button>
+            </div>
+            <p class="text-danger"
+               th:if="${errors != null && errors.containsKey('rooms')}"
+               th:text="${errors.get('rooms')}"></p>
+            <p class="text-danger mt-1" hidden id="roomError"></p>
+          </div>
+          <div class="room-container mt-3" id="roomList"></div>
+          <p th:if="${errors != null and errors.containsKey('unmodifiable')}"
+             th:text="${errors.get('unmodifiable')}"></p>
+          <p th:if="${recordHasUnmodifiableRooms}">
+            Note: Rooms associated with renovationDesigns cannot be removed from the renovation.
+          </p>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="d-flex justify-content-end gap-2 mt-4">
+        <a class="btn btn-secondary" id="cancelButton"
+           th:href="@{/viewRenovation/{id}(id=${renovation.id})}"
+           type="button">Cancel</a>
+        <button class="btn btn-primary" id="submitButton" type="submit">Submit</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script th:inline="javascript">
+    let rooms = /*[[${roomSummaries != null ? roomSummaries : '[]'}]]*/ [];
+</script>
+<script th:src="@{/js/editRenovation.js}" type="module"></script>
+</body>
+</html>

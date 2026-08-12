@@ -1,0 +1,111 @@
+/* Extra Small (XS) - less than 576px */
+@media (max-width: 575px) {
+  /* Styles for smaller screens */
+  #pfp {
+    width: 100px;
+  }
+
+  #user-details {
+    width: 90%;
+  }
+
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .edit-profile-image {
+    width: 75px;
+    height: 75px;
+  }
+}
+
+/* Small (SM) - 576px and up */
+@media (min-width: 576px) {
+  /* Styles for small screens */
+  #pfp {
+    width: 100px;
+  }
+
+  #user-details {
+    width: 90%;
+  }
+
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .edit-profile-image {
+    width: 100px;
+    height: 100px;
+  }
+}
+
+/* Medium (MD) - 768px and up */
+@media (min-width: 768px) {
+  /* Styles for tablets and medium screens */
+  #pfp {
+    width: 150px;
+  }
+
+  #user-details {
+    width: 75%;
+  }
+
+  .profile-image {
+    width: 150px;
+    height: 150px;
+  }
+
+  .edit-profile-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  #edit-chosen-file {
+    max-width: 100px;
+  }
+}
+
+/* Large (LG) - 992px and up */
+@media (min-width: 992px) {
+  /* Styles for desktops and large screens */
+  #user-details {
+    width: 60%;
+  }
+
+}
+
+/* Extra Large (XL) - 1200px and up */
+@media (min-width: 1200px) {
+  /* Styles for larger desktops */
+}
+
+/* Extra Extra Large (XXL) - 1400px and up */
+@media (min-width: 1400px) {
+  /* Styles for ultra-wide screens */
+}
+
+#user-details {
+  position: relative;
+}
+
+#edit-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+.circular-image {
+  object-fit: cover; /* Prevents distortion */
+  border-radius: 50%; /* Circular */
+}
+
+.small-text {
+  font-size: 0.7em;
+}
+
+.image-error {
+  border: 1px solid #dc3545; /* The colour used on bootstraps is-invalid for consistency */
+}

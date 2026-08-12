@@ -1,0 +1,180 @@
+<!--
+  locationFragment(required)
+
+  Modal fragment for entering or autofilling a location. Includes inputs for street, suburb, city, postcode, and country.
+
+  Usage:
+    Example:
+      <div th:replace="~{fragments/locationFragment :: locationFragment(${false})}"></div>
+    - Include inside a parent <form>
+    - Use ${true} to mark inputs (except suburb) as required; ${false} to leave them optional.
+    - Use th:replace (not th:include) so inputs integrate into the parent form without an extra container element.
+
+  /js/locationAutofill.js enables autofill functionality.
+-->
+<th:block th:fragment="locationFragment(required)">
+  <div aria-hidden="true" aria-labelledby="exampleModalLabel" class="modal fade" id="locationModal"
+       tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Enter Location</h5>
+          <button aria-label="Close" class="btn-close" data-bs-dismiss="modal"
+                  type="button"></button>
+        </div>
+        <div class="modal-body">
+          <div class="location-autocomplete mb-3">
+            <h6 class="mb-3">Autofill a Location</h6>
+            <ul class="list-group mb-3">
+              <li class="list-group-item location-inactive d-flex align-items-center"
+                  id="selected-location-modal-box">
+                <svg class="me-2" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                      d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"/>
+                </svg>
+                <p class="m-0" th:text="${fullAddress} ? ${fullAddress} : 'No Location'"></p>
+              </li>
+            </ul>
+            <ul class="list-group scroll-shadows mb-3" id="autocomplete-list">
+            </ul>
+          </div>
+          <div class="form-floating mb-3">
+            <input class="form-control" id="streetAddressField" name="streetAddressField"
+                   placeholder="42 Lambton Quay"
+                   required th:if="${required}"
+                   th:value="${userDTO} ? ${userDTO.street} : (${location} ? ${location.street} : '')"
+                   type="text"/>
+            <input class="form-control" id="streetAddressField" name="streetAddressField"
+                   placeholder="42 Lambton Quay"
+                   th:unless="${required}"
+                   th:value="${userDTO} ? ${userDTO.street} : (${location} ? ${location.street} : '')"
+                   type="text"/>
+            <input class="form-control" id="streetAddress" name="streetAddress"
+                   placeholder="New Zealand"
+                   th:value="${userDTO} ? ${userDTO.street} : (${location} ? ${location.street} : '')"
+                   type="hidden"/>
+            <p class="text-danger" id="streetError" style="display: none;"></p>
+            <label class="form-label" for="streetAddress">
+              Street Address <span class="text-danger" th:if="${required}">*</span>
+            </label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input class="form-control" id="suburbField" name="suburbField" placeholder="Te Aro"
+                   th:value="${userDTO} ? ${userDTO.suburb} : (${location} ? ${location.suburb} : '')"
+                   type="text"/>
+            <input class="form-control" id="suburb" name="suburb" placeholder="New Zealand"
+                   th:value="${userDTO} ? ${userDTO.suburb} : (${location} ? ${location.suburb} : '')"
+                   type="hidden"/>
+            <p class="text-danger" id="suburbError" style="display: none;"></p>
+            <label for="suburb">Suburb</label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input class="form-control" id="cityField" name="cityField" placeholder="Wellington"
+                   required th:if="${required}"
+                   th:value="${userDTO} ? ${userDTO.city} : (${location} ? ${location.city} : '')"
+                   type="text"/>
+            <input class="form-control" id="cityField" name="cityField" placeholder="Wellington"
+                   th:unless="${required}"
+                   th:value="${userDTO} ? ${userDTO.city} : (${location} ? ${location.city} : '')"
+                   type="text"/>
+            <input class="form-control" id="city" name="city" placeholder="New Zealand"
+                   th:value="${userDTO} ? ${userDTO.city} : (${location} ? ${location.city} : '')"
+                   type="hidden"/>
+            <p class="text-danger" id="cityError" style="display: none;"></p>
+            <label for="city">
+              City <span class="text-danger" th:if="${required}">*</span>
+            </label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input class="form-control" id="postcodeField" name="postcodeField" placeholder="6011"
+                   required th:if="${required}"
+                   th:value="${userDTO} ? ${userDTO.postcode} : (${location} ? ${location.postCode} : '')"
+                   type="text"/>
+            <input class="form-control" id="postcodeField" name="postcodeField" placeholder="6011"
+                   th:unless="${required}"
+                   th:value="${userDTO} ? ${userDTO.postcode} : (${location} ? ${location.postCode} : '')"
+                   type="text"/>
+            <input class="form-control" id="postcode" name="postcode" placeholder="New Zealand"
+                   th:value="${userDTO} ? ${userDTO.postcode} : (${location} ? ${location.postCode} : '')"
+                   type="hidden"/>
+            <p class="text-danger" id="postcodeError" style="display: none;"></p>
+            <label for="postcode">
+              Postcode <span class="text-danger" th:if="${required}">*</span>
+            </label>
+          </div>
+
+          <div class="form-floating mb-3">
+            <input class="form-control" id="countryField" name="countryField"
+                   placeholder="New Zealand"
+                   required th:if="${required}"
+                   th:value="${userDTO} ? ${userDTO.country} : (${location} ? ${location.country} : '')"
+                   type="text"/>
+            <input class="form-control" id="countryField" name="countryField"
+                   placeholder="New Zealand"
+                   th:unless="${required}"
+                   th:value="${userDTO} ? ${userDTO.country} : (${location} ? ${location.country} : '')"
+                   type="text"/>
+            <input class="form-control" id="country" name="country" placeholder="New Zealand"
+                   th:value="${userDTO} ? ${userDTO.country} : (${location} ? ${location.country} : '')"
+                   type="hidden"/>
+            <p class="text-danger" id="countryError" style="display: none;"></p>
+            <label for="country">
+              Country <span class="text-danger" th:if="${required}">*</span>
+            </label>
+          </div>
+          <p style="font-size: 0.75rem; opacity: 0.6; margin-top: 10px;">
+            IP location data provided by
+            <a href="http://kloudend.com/" style="color: inherit; text-decoration: underline;">ipapi
+              /
+              ipapi.co by Kloudend</a>
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" onclick="clickSaveButton()" type="button">Save
+          </button>
+          <button class="btn btn-danger" data-bs-dismiss="modal" onclick="clickRemoveLocation()"
+                  type="button">Delete location
+          </button>
+          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <button class="btn btn-outline-secondary location-select location-inactive"
+          data-bs-target="#locationModal"
+          data-bs-toggle="modal" id="location-select-btn"
+          onclick="clickOpenLocationModal()" type="button">
+    <svg viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
+      <!-- Font Awesome Free 5.15.3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) -->
+      <path
+          d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"/>
+    </svg>
+    <div class="pt-1">
+      <h6 id="selected-location-title"
+          th:text="${fullAddress != null and #strings.replace(fullAddress, '[ ,]', '') != ''} ? ${fullAddress} : 'Select Location'"></h6>
+      <p id="selected-location-subtitle"
+         th:text="${fullAddress != null and #strings.replace(fullAddress, '[ ,]', '') != ''} ? '' : 'Optional'"></p>
+    </div>
+  </button>
+  <div>
+    <p class="text-danger mt-1" id="streetErrorOutside"
+       th:style="${errors != null and errors[streetError] != null} ? '' : 'display: none;'"
+       th:text="${errors != null and errors[streetError] != null} ? ${errors[streetError]} : ''"></p>
+    <p class="text-danger mt-1" id="suburbErrorOutside"
+       th:style="${errors != null and errors[suburbError] != null} ? '' : 'display: none;'"
+       th:text="${errors != null and errors[suburbError] != null} ? ${errors[suburbError]} : ''"></p>
+    <p class="text-danger mt-1" id="cityErrorOutside"
+       th:style="${errors != null and errors[cityError] != null} ? '' : 'display: none;'"
+       th:text="${errors != null and errors[cityError] != null} ? ${errors[cityError]} : ''"></p>
+    <p class="text-danger mt-1" id="postcodeErrorOutside"
+       th:style="${errors != null and errors[postcodeError] != null} ? '' : 'display: none;'"
+       th:text="${errors != null and errors[postcodeError] != null} ? ${errors[postcodeError]} : ''"></p>
+    <p class="text-danger mt-1" id="countryErrorOutside"
+       th:style="${errors != null and errors[countryError] != null} ? '' : 'display: none;'"
+       th:text="${errors != null and errors[countryError] != null} ? ${errors[countryError]} : ''"></p>
+  </div>
+  <script th:src="@{/js/locationAutofill.js}"></script>
+</th:block>

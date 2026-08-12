@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <th:block th:insert="~{fragments/head :: head(
+      'Error | Your Space',
+      'Error',
+      'error')}"></th:block>
+</head>
+<body>
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+<div class="row">
+  <div class="col">
+    <img alt="error image" style="max-width: 300px;" th:src="@{/img/error.png}"/>
+  </div>
+  <div class="col">
+    <table class="table">
+      <tr>
+        <td>Date</td>
+        <td th:text="${timestamp}"/>
+      </tr>
+      <tr>
+        <td>Path</td>
+        <td th:text="${path}"/>
+      </tr>
+      <tr>
+        <td>Error</td>
+        <td th:text="${error}"/>
+      </tr>
+      <tr>
+        <td>Status</td>
+        <td th:text="${status}"/>
+      </tr>
+      <tr>
+        <td>Message</td>
+        <td th:text="${message}"/>
+      </tr>
+      <tr>
+        <td>Exception</td>
+        <td th:text="${exception}"/>
+      </tr>
+      <tr>
+        <td>Trace</td>
+        <td>
+          <pre th:text="${trace}"/>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+</body>

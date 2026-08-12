@@ -1,0 +1,174 @@
+/* Extra Small (XS) - 575px and below */
+@media (min-width: 0px) {
+  /* Styles for extra-small screens */
+  .design-card {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .design-icon {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Small (SM) - 576px and up */
+@media (min-width: 576px) {
+  /* Styles for small screens */
+  .design-card {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+
+  .selected-item svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .design-icon {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Medium (MD) - 768px and up */
+@media (min-width: 768px) {
+  /* Styles for tablets and medium screens */
+  .design-card {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .selected-item svg {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}
+
+/* Large (LG) - 992px and up */
+@media (min-width: 992px) {
+  /* Styles for desktops and large screens */
+  .design-card {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+/* Extra Large (XL) - 1200px and up */
+@media (min-width: 1200px) {
+  /* Styles for larger desktops */
+  .design-card {
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  }
+}
+
+/* Extra Extra Large (XXL) - 1400px and up */
+@media (min-width: 1400px) {
+  /* Styles for ultra-wide screens */
+}
+
+.room-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  max-height: 150px;
+  overflow-y: scroll; /* Ensures scrollbar is always visible */
+  margin-bottom: 10px;
+}
+
+.room-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  background-color: #e0e0e0;
+  border-radius: 15px;
+  font-size: 16px;
+}
+
+.remove-btn {
+  color: red;
+  background: none;
+  border: none;
+  padding: 0 5px;
+  font-weight: bold;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  opacity: 0.7;
+}
+
+/* Add this to your CSS file */
+.rooms-scrollable-container::-webkit-scrollbar,
+.room-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.rooms-scrollable-container::-webkit-scrollbar-track,
+.room-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.rooms-scrollable-container::-webkit-scrollbar-thumb,
+.room-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.rooms-scrollable-container::-webkit-scrollbar-thumb:hover,
+.room-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.max-vh-40 {
+  max-height: 40vh;
+}
+
+.date-error {
+  border: 1px solid red;
+  border-radius: 3px;
+}
+
+.dropdown-menu {
+  min-width: 200px;
+  max-width: 100vw;
+  width: auto !important;
+}
+
+.dropdown-item div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  max-width: 100px;
+  width: auto;
+  height: 100%;
+}
+
+.selected-item div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+
+.dropdown-item svg {
+  transform: scale(1.5);
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+}
+
+.dropdown-anim-icon .icon {
+  transition: transform 0.5s cubic-bezier(0.42, 0, 0.58, 1.5);
+}
+
+.dropdown-anim-icon[aria-expanded="true"] .icon {
+  transform: rotate(360deg);
+}
+
+.force-hidden {
+  display: none !important;
+}

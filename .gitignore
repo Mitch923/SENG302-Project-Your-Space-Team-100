@@ -1,0 +1,55 @@
+HELP.md
+.gradle
+build/
+!**/src/main/**/build/
+src/main/ts/build
+src/main/resources/static/js/editor
+node_modules
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/test/**/build/
+env.properties
+
+### File Uploads ###
+!.gitkeep
+/uploads/**
+!/uploads/models/default-models/**
+!/uploads/textures/default-textures/**
+!/uploads/scenes/.gitkeep
+!/uploads/textures/custom
+!/uploads/textures/custom/fab.png
+test-uploads
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+### Mac
+.DS_Store
+/target/cucumber-report/cucumber.html

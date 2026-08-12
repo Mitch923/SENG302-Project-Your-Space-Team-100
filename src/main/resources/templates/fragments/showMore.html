@@ -1,0 +1,22 @@
+<!--
+  Show more fragment, this can be used to create a body of text that
+  automatically truncates after a given number of lines.
+
+  Usage is as follows:
+  <div th:replace="~{fragments/showMore :: showMoreText(textToDisplay, textId, bootstrapClasses, linesToShow)}"></div>
+  Bootstrap classes can be used to style the text, and the number of lines to show before truncation can be changed.
+-->
+<div th:fragment="showMoreText(text, uid, bootstrapClasses, lineCount)"
+     xmlns:th="http://www.w3.org/1999/html">
+
+  <p th:class="'truncate-multiline break-by-letter ' + ${bootstrapClasses}"
+     th:id="'truncatedText-' + ${uid}"
+     th:style="'-webkit-line-clamp: ' + ${lineCount} + ';'"
+     th:text="${text}">
+  </p>
+
+  <button class="btn btn-link p-0"
+          style="display: none;"
+          th:id="'showMoreBtn-' + ${uid}">Show more...
+  </button>
+</div>

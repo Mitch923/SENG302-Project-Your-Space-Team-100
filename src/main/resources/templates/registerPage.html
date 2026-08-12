@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:insert="~{fragments/head :: head(
+      'Register | Your Space',
+      'Register and join others in renovating your home',
+      'register, sign up')}"></th:block>
+  <base th:href="@{/}">
+</head>
+<body class="bg-dark-subtle">
+<div th:replace="~{fragments/public_header:: publicHeader}"></div>
+<div class="container-fluid vh-80 d-flex mt-5 justify-content-center">
+  <div class="row w-100 justify-content-center">
+    <div class="col-sm-10 col-md-6 col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <form id="registerForm" method="POST" th:action="@{register}">
+            <div class="d-flex justify-content-between align-items-center p-2">
+              <h1 class="card-title">Register</h1>
+              <a class="btn btn-secondary p-2" th:href="@{/}">Cancel</a>
+            </div>
+            <div class="row p-2">
+              <div class="col">
+                <label class="form-label" for="firstname">First name</label>
+                <input autofocus class="form-control" id="firstname" name="firstname"
+                       onblur="validateFirstNameRegistrationPage()"
+                       placeholder="First name" th:value="${userDTO.getFirstName()}"
+                       type="text">
+                <p class="text-danger" id="firstNameError"
+                   th:classappend="${errors != null and errors.containsKey('firstName') ? '' : 'd-none'}"
+                   th:text="${errors != null and errors.containsKey('firstName') ? errors.get('firstName') : ''}"></p>
+              </div>
+              <div class="col">
+                <label class="form-label" for="lastname">Last name</label>
+                <input class="form-control" id="lastname" name="lastname"
+                       onblur="validateLastNameRegistrationPage()"
+                       placeholder="Last name"
+                       th:value="${userDTO.getLastName()}" type="text">
+                <p class="text-danger" id="lastNameError"
+                   th:classappend="${errors != null and errors.containsKey('lastName') ? '' : 'd-none'}"
+                   th:text="${errors != null and errors.containsKey('lastName') ? errors.get('lastName') : ''}"></p>
+              </div>
+            </div>
+            <div class="form-group p-2">
+              <label class="form-label" for="email">Email address</label>
+              <input class="form-control" id="email" name="email"
+                     onblur="validateEmailRegistrationPage()"
+                     placeholder="Email address"
+                     th:classappend="${errors != null and (errors.containsKey('email') or errors.containsKey('emailInUse')) ? 'is-invalid' : ''}"
+                     th:value="${userDTO.getEmail()}"
+                     type="text">
+              <p class="text-danger" id="emailError"
+                 th:classappend="${errors != null and errors.containsKey('email') ? '' : 'd-none'}"
+                 th:text="${errors != null and errors.containsKey('email') ? errors.get('email') : ''}"></p>
+              <div th:if="${errors != null and not #maps.isEmpty(errors)}">
+                <div th:if="${errors.containsKey('emailInUse')}">
+                  <div class="text-danger">
+                    <span id="emailInUseError" th:text="${errors.emailInUse}"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group p-2">
+              <label class="form-label" for="password">Password</label>
+              <input class="form-control" id="password" name="password" placeholder="Password"
+                     type="password">
+              <p class="text-danger" id="passwordError" style="display: none;"></p>
+            </div>
+            <div class="form-group p-2">
+              <label class="form-label" for="confirm">Confirm Password</label>
+              <input class="form-control" id="confirm" name="confirm"
+                     placeholder="Re-type password" type="password">
+              <p class="text-danger" id="confirmError" style="display: none;"></p>
+            </div>
+            <div class="d-grid p-2">
+              <div th:replace="~{fragments/locationFragment :: locationFragment(${false})}"></div>
+              <button class="btn btn-lg btn-primary btn-block mt-2" type="submit">Sign Up</button>
+            </div>
+            <p class="text-center"><small>Already have an account? <a
+                href="login">Login.</a></small>
+            </p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script th:src="@{/js/fieldValidation.js}"></script>
+<script>
+    const runPasswordValidation = setupPasswordValidation({
+        invalidPassword: "Your password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character",
+        passwordLength: "Password must be 255 characters long or less",
+        passwordsMatching: "Passwords do not match",
+        containsUserDetails: "Your password cannot contain any details from your profile"
+    });
+
+    document.getElementById("registerForm").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        // Run all validations
+        const formValid = await validateRegistrationPage();
+        const valid = runPasswordValidation() && formValid;
+        const locationValid = isLocationFormEmpty() || validateLocationForm();
+
+        // Only submit if password and location validations pass
+        if (valid && locationValid) {
+            this.submit();
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <th:block th:insert="~{fragments/head :: head(
+      'Import Design | Your Space',
+      'Your Space Import Design Page',
+      'Import design page')}"></th:block>
+  <link rel="stylesheet" th:href="@{/css/home.css}">
+  <link rel="stylesheet" th:href="@{/css/autocompleteAddTag.css}"/>
+</head>
+<body>
+
+<div th:replace="~{fragments/internal_header:: internalHeader}"></div>
+
+<div class="container my-4 d-flex flex-column gap-3">
+
+  <!--  Heading   -->
+  <div class="shadow-sm rounded-2 bg-white p-3">
+    <h2 class="text-bold text-dark mb-0">Import a Design</h2>
+  </div>
+
+  <div class="shadow-sm rounded-2 bg-white p-3 d-flex flex-wrap justify-content-center">
+    <!--  Search/Filter Container  -->
+    <div class="d-flex flex-column align-items-start w-100">
+      <!--    Search bar  -->
+      <div class="d-flex w-100 mb-2 justify-content-center">
+        <form class="d-flex w-100" id="search-form">
+          <input aria-label="Search Designs" class="form-control me-3" id="searchInput"
+                 placeholder="Search Designs"
+                 type="text">
+          <!--        Large screen button -->
+          <button class="btn btn-outline-primary d-none d-md-block" type="submit">Search</button>
+          <!--        Small screen button -->
+          <button class="btn d-md-none px-1" type="submit">
+            <svg viewBox="0 0 512 512" width="24" xmlns="http://www.w3.org/2000/svg">
+              <!-- Font Awesome Free 5.15.3 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) -->
+              <path
+                  d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"></path>
+            </svg>
+          </button>
+        </form>
+      </div>
+      <!-- Filter Search bar -->
+      <div class="d-flex mt-2 mb-4 justify-content-center w-100 position-relative">
+        <div id="filterContainer" class="fakeInput w-100 form-control d-flex gap-1 align-items-center flex-wrap">
+          <input aria-label="Filter by renovation" style="border: none;"
+                 placeholder="Filter by Renovation"
+                 type="text" id="filterInput" class="flex-grow-1">
+        </div>
+        <div id="autocompleteList" class="autocomplete-items w-100 mx-2" hidden>
+        </div>
+      </div>
+    </div>
+    <!--    Users Designs   -->
+    <div class="w-100" id="paginationContent"
+         th:data-url="@{/importDesign/search/results/paged}">
+    </div>
+
+
+  </div>
+</div>
+
+<div class="modal" id="confirmImportModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm</h5>
+        <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button"></button>
+      </div>
+      <div class="modal-body">
+        <input id="competitionTheme" th:value="${competitionTheme}" type="hidden">
+        <p id="importConfirmationMessage">
+          Are you sure you want to import ?
+        </p>
+      </div>
+      <div class="modal-footer">
+        <form id="importDesignForm" method="post">
+          <input th:name="${_csrf.parameterName}" th:value="${_csrf.token}" type="hidden"/>
+          <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancel</button>
+          <button class="btn btn-primary" type="submit">Import</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script th:src="@{/js/paginationScript.js}"></script>
+<script>
+    window.onload = function () {
+        const baseContentURL = document.getElementById("paginationContent").dataset.url;
+        initPagination(baseContentURL);
+    };
+</script>
+
+<script th:src="@{/js/importDesign.js}" type="module"></script>
+
+</body>
+</html>

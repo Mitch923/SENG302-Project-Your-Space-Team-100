@@ -1,0 +1,19 @@
+<div class="container my-4">
+  <div class="row g-4">
+    <div class="col-6 col-sm-6 col-md-4 col-lg-3" th:each="renovationDesign : ${designs}">
+      <div
+          th:replace="~{fragments/designPreviewFragment :: designPreview(${renovationDesign}, ${true}, 'importDesign')}"></div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col d-flex justify-content-center mt-4">
+    <div th:replace="~{fragments/pagination :: pagination(
+          ${totalPages},
+          @{/importDesign/search/results/paged}
+      )}"></div>
+  </div>
+</div>
+<h5 class="text-center text-muted" th:if="${designs == null or designs.isEmpty()}">No matching
+  designs</h5>
+
